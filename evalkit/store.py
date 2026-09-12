@@ -105,19 +105,53 @@ def allocate_run_dir(runs_dir: Path, *, _attempts: int = MAX_RUN_ID_ATTEMPTS) ->
     )
 
 
+def _validate_run_id(run_id: str, runs_dir: Path) -> Path:
+    """Reject run_ids that are not a single safe directory name.
+
+    A caller-supplied run_id (e.g. from loading a foreign record or an
+    API caller) must never traverse outside runs/: no separators, no
+    '..' segments, no absolute paths, no drive letters, no null bytes.
+    The store's own allocate_run_dir only ever produces
+    YYYYmmddTHHMMSSZ-8hex, so this guard protects the
+    caller-supplied-run_id branch of save_run.
+    """
+    if (
+        not run_id
+        or "\x00" in run_id
+        or "/" in run_id
+        or "\\" in run_id
+        or run_id in (".", "..")
+        or Path(run_id).name != run_id
+        or (len(run_id) >= 2 and run_id[1] == ":")
+    ):
+        raise StoreError(
+            f"unsafe run_id {run_id!r}: must be a single directory name "
+            "(expected format YYYYmmddTHHMMSSZ-XXXXXXXX)"
+        )
+    run_dir = runs_dir / run_id
+    resolved_parent = runs_dir.resolve()
+    if not run_dir.resolve().parent == resolved_parent:
+        raise StoreError(
+            f"unsafe run_id {run_id!r}: would resolve outside {resolved_parent}"
+        )
+    return run_dir
+
+
 def save_run(record: RunRecord, runs_dir: Path, *, report_markdown: str | None = None) -> RunRecord:
     """Persist a run atomically; returns the persisted RunRecord (with
     run_id assigned by allocate_run_dir when the caller left it blank —
     the runner leaves it blank; the store owns allocation with
     retry-on-collision).
 
-    Credential redaction (redact_raw) is applied inside this persistence
-    path, before the atomic write. Both result.json and (when given)
-    report.md are written via tmp-file + os.replace.
+    Caller-supplied run_ids are validated as a single safe directory
+    name (no traversal, absolute paths or separators). Credential
+    redaction (redact_raw) is applied inside this persistence path,
+    before the atomic write. Both result.json and (when given) report.md
+    are written via tmp-file + os.replace.
     """
     if record.run_id:
         run_id = record.run_id
-        run_dir = runs_dir / run_id
+        run_dir = _validate_run_id(run_id, runs_dir)
     else:
         run_id, run_dir = allocate_run_dir(runs_dir)
     record = RunRecord(
