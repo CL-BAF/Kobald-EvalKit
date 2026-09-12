@@ -1,0 +1,39 @@
+{
+  "schema_version": "1",
+  "case_id": "so_json_array_filter",
+  "suite": "structured_output",
+  "title": "Emit a filtered JSON array with correct item types",
+  "purpose": "Tests whether the model produces a JSON array containing only the items matching a stated condition, with the correct per-item shape. Structured extraction often degrades into arrays mixing matched and unmatched items or objects with inconsistent keys; this case makes both failure modes countable while keeping the schema simple enough for deterministic verification.",
+  "evidence": [
+    {
+      "id": "LOG-1",
+      "text": "Delivery ledger, week 32: Monday - flour, 12 sacks, delivered. Tuesday - nails, 3 crates, delayed. Wednesday - flour, 5 sacks, delivered. Thursday - glass, 9 panes, delayed. Friday - flour, 8 sacks, delivered."
+    }
+  ],
+  "instruction": "You are given a delivery ledger excerpt. Return ONLY a JSON array. Each element must be an object with exactly these keys: \"day\" (string), \"goods\" (string), \"quantity\" (number). Include ONLY entries where the goods are flour. Do not include delayed-status commentary or any other keys. Do not wrap the array in text or fences.",
+  "constraints": "Response must be a single JSON array with exactly three elements (Monday, Wednesday, Friday flour entries), each with exactly day/goods/quantity keys, quantity numeric.",
+  "scoring": [
+    {
+      "type": "valid_json",
+      "params": {},
+      "weight": 3
+    },
+    {
+      "type": "field_type",
+      "params": {
+        "field": "$",
+        "type": "array"
+      },
+      "weight": 2
+    },
+    {
+      "type": "required_fields",
+      "params": {
+        "fields": ["day", "goods", "quantity"],
+        "strict": true
+      },
+      "weight": 4
+    }
+  ],
+  "expected": "A single JSON array of three objects, one per delivered flour entry (Monday 12, Wednesday 5, Friday 8), each with exactly the keys day, goods, quantity, no fences or prose."
+}

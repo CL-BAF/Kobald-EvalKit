@@ -1,0 +1,27 @@
+{
+  "case_id": "bad/id.chars",
+  "suite": "evidence_grounding",
+  "title": "case_id outside allowed charset",
+  "purpose": "Fixture: case_id contains dots/slashes; loader must reject naming this file.",
+  "evidence": [
+    {
+      "id": "SRC-1",
+      "text": "The capital of France is Paris."
+    }
+  ],
+  "instruction": "Answer with the capital city only.",
+  "constraints": "Do not add commentary.",
+  "scoring": [
+    {
+      "type": "required_source_ids",
+      "params": {
+        "ids": [
+          "SRC-1"
+        ],
+        "allow_extras": false
+      },
+      "weight": 1
+    }
+  ],
+  "expected": "Paris [SRC-1]"
+}

@@ -1,0 +1,11 @@
+{
+  "case_id": "evidence_entry_unknown_key",
+  "suite": "evidence_grounding",
+  "title": "Evidence entry with unknown key",
+  "purpose": "Fixture: evidence entry carries an extra 'source' key; loader must reject naming this file.",
+  "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris.", "source": "nowhere"}],
+  "instruction": "Answer with the capital city only.",
+  "constraints": "Do not add commentary.",
+  "scoring": [{"type": "required_source_ids", "params": {"ids": ["SRC-1"], "allow_extras": false}, "weight": 1}],
+  "expected": "Paris [SRC-1]"
+}

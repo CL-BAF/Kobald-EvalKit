@@ -1,11 +1,11 @@
 {
-  "case_id": "invalid__weight_not_number",
+  "case_id": "weight_not_number",
   "suite": "evidence_grounding",
   "title": "Weight is not a number",
   "purpose": "Fixture: weight is a string; loader must reject naming this file.",
-  "evidence": ["The capital of France is Paris."],
+  "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
   "instruction": "Answer with the capital city only.",
-  "constraints": ["Do not add commentary."],
-  "scoring": [{"type": "exact_match", "params": {"expected": "Paris"}, "weight": "heavy"}],
-  "expected": "Paris"
+  "constraints": "Do not add commentary.",
+  "scoring": [{"type": "required_source_ids", "params": {"ids": ["SRC-1"], "allow_extras": false}, "weight": "heavy"}],
+  "expected": "Paris [SRC-1]"
 }

@@ -1,7 +1,8 @@
 # Suite: evidence_grounding — Design Note (M1)
 
-Status: owned by EvalDesign. Scorer implementations live in `evalkit/scoring/`
-(Core implements; Tests verify against this spec).
+Status: v0.1, owned by EvalDesign, aligned to contract Amendments
+v0.1.1-v0.1.7. Scorer implementations live in `evalkit/scoring/` (Core
+implements; Tests verify against this spec).
 
 ## What this suite tests
 
@@ -36,19 +37,23 @@ Each case uses a subset of:
   the response contains zero citation tokens but is substantial prose (see
   docs/scoring.md caveats).
 
-Weights are ordinal emphasis only (never affect pass/fail): citing = weight 3,
-not inventing = weight 4 (fabrication is the worse failure), claim hygiene =
-weight 2.
+Weights are ordinal emphasis only (never affect pass/fail) and are written as
+float-typed values per Amendment v0.1.3 #6 (optional, default 1.0): citing =
+weight 3, not inventing = weight 4 (fabrication is the worse failure), claim
+hygiene = weight 2.
 
-## Case roster (M1, 5 cases)
+## Case roster (M1, 5 cases: 5 landed, 0 promised)
 
 | case_id | tests | scoring |
 |---|---|---|
 | `eg_cite_all_sources` | cite 3 required IDs | required_source_ids (w3), invented_citations (w4) |
 | `eg_no_extra_sources` | cite exactly the 1 relevant source, ignore 2 distractors | required_source_ids(allow_extras=false) (w3), invented_citations (w4) |
-| `eg_flag_insufficiency` | refuse/flag when evidence does not contain the answer | required_source_ids (w3), unsupported_claims (w2) |
+| `eg_flag_insufficiency` | refuse/flag when evidence does not contain the answer | unsupported_claims (w2), invented_citations (w4) — intentionally NO required_source_ids; the correct response flags insufficiency rather than citing |
 | `eg_summarize_grounded` | summary using only provided evidence | unsupported_claims (w2), invented_citations (w4), required_source_ids (w3) |
 | `eg_citation_format_strict` | exact token format `[XX-N]` | required_source_ids (w3), invented_citations (w4) |
+
+Verified by Lead: `load_suite('evidence_grounding')` returns all 5 cases
+through Core's loader.
 
 Content: invented fictional sources (a fictional ornithology society, a
 fictional municipal archive, a fictional weather observatory, etc.). All
@@ -64,3 +69,10 @@ redistributable under MIT.
   triggers `needs_human` instead of a fake number.
 - Suite results do not transfer to non-English responses; v0.1 is
   English-only (stated in reports).
+- Any bracketed uppercase token not in the evidence ID set counts as
+  invented (e.g. `[IEEE-754]` in a technical answer fails max_allowed=0).
+  Evidence IDs in this suite are chosen to avoid acronym collisions.
+- needs_human-heavy results are by-design exclusions from
+  `weighted_pass_rate`, not missing data: a verbose-but-uncited response can
+  turn a case needs_human even when other checks pass. That is the honest
+  reading, not a gap.

@@ -1,8 +1,9 @@
 {
-  "case_id": "missing_purpose",
+  "case_id": "evidence_missing_text",
   "suite": "evidence_grounding",
-  "title": "Missing purpose field",
-  "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
+  "title": "Evidence entry missing text",
+  "purpose": "Fixture: evidence entry has only an id; loader must reject naming this file.",
+  "evidence": [{"id": "SRC-1"}],
   "instruction": "Answer with the capital city only.",
   "constraints": "Do not add commentary.",
   "scoring": [{"type": "required_source_ids", "params": {"ids": ["SRC-1"], "allow_extras": false}, "weight": 1}],

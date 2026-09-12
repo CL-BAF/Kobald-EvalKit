@@ -1,15 +1,19 @@
 {
-  "case_id": "valid__grounding_lima",
+  "schema_version": "1",
+  "case_id": "grounding_lima",
   "suite": "evidence_grounding",
   "title": "Capital of Peru",
-  "purpose": "Valid full case: two evidence lines, three checks including zero-weight check to exercise weight handling.",
-  "evidence": ["Lima is the capital of Peru.", "Peru is in South America."],
-  "instruction": "Using only the evidence provided, name the capital of Peru. Cite the evidence line you used.",
-  "constraints": ["Answer with the city name and citation only.", "Do not invent sources.", "Do not answer questions about other countries."],
-  "scoring": [
-    {"type": "exact_match", "params": {"expected": "Lima"}, "weight": 2.0},
-    {"type": "no_invented_citations", "params": {}, "weight": 1.0},
-    {"type": "exact_match", "params": {"expected": "Santiago"}, "weight": 0.0}
+  "purpose": "Valid full case: two evidence lines, three checks including a weight-boundary 5 to exercise aggregate weighting.",
+  "evidence": [
+    {"id": "GEO-1", "text": "Lima is the capital of Peru."},
+    {"id": "GEO-2", "text": "Peru is in South America."}
   ],
-  "expected": "Lima [1]"
+  "instruction": "Using only the evidence provided, name the capital of Peru. Cite the evidence line you used with a bracketed token like [GEO-1].",
+  "constraints": "Answer with the city name and citation only; do not invent sources.",
+  "scoring": [
+    {"type": "required_source_ids", "params": {"ids": ["GEO-1"], "allow_extras": false}, "weight": 2},
+    {"type": "invented_citations", "params": {"max_allowed": 0, "ids": ["GEO-1", "GEO-2"]}, "weight": 1},
+    {"type": "required_source_ids", "params": {"ids": ["GEO-2"], "allow_extras": true}, "weight": 5}
+  ],
+  "expected": "Lima [GEO-1]"
 }

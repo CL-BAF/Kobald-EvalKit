@@ -1,10 +1,10 @@
 {
-  "case_id": "invalid__missing_scoring",
+  "case_id": "missing_scoring",
   "suite": "evidence_grounding",
   "title": "Missing scoring field",
   "purpose": "Fixture: scoring key absent; loader must reject naming this file.",
-  "evidence": ["The capital of France is Paris."],
+  "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
   "instruction": "Answer with the capital city only.",
-  "constraints": ["Do not add commentary."],
-  "expected": "Paris"
+  "constraints": "Do not add commentary.",
+  "expected": "Paris [SRC-1]"
 }

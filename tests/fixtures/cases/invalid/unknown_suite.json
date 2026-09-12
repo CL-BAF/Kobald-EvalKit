@@ -1,7 +1,8 @@
 {
-  "case_id": "missing_purpose",
-  "suite": "evidence_grounding",
-  "title": "Missing purpose field",
+  "case_id": "unknown_suite",
+  "suite": "vibes",
+  "title": "Unknown suite directory",
+  "purpose": "Fixture: suite 'vibes' is not in the v0.1 registry; loader must reject naming this file.",
   "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
   "instruction": "Answer with the capital city only.",
   "constraints": "Do not add commentary.",

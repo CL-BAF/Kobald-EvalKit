@@ -1,0 +1,14 @@
+{
+  "case_id": "duplicate_evidence_ids",
+  "suite": "evidence_grounding",
+  "title": "Duplicate evidence IDs",
+  "purpose": "Fixture: two evidence entries share id SRC-1; loader must reject naming this file.",
+  "evidence": [
+    {"id": "SRC-1", "text": "The capital of France is Paris."},
+    {"id": "SRC-1", "text": "Paris sits on the Seine."}
+  ],
+  "instruction": "Answer with the capital city only.",
+  "constraints": "Do not add commentary.",
+  "scoring": [{"type": "required_source_ids", "params": {"ids": ["SRC-1"], "allow_extras": false}, "weight": 1}],
+  "expected": "Paris [SRC-1]"
+}

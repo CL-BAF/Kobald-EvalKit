@@ -1,11 +1,11 @@
 {
-  "case_id": "invalid__scoring_missing_type",
+  "case_id": "scoring_missing_type",
   "suite": "evidence_grounding",
   "title": "Scoring entry missing type",
   "purpose": "Fixture: scoring entry lacks type; loader must reject naming this file.",
-  "evidence": ["The capital of France is Paris."],
+  "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
   "instruction": "Answer with the capital city only.",
-  "constraints": ["Do not add commentary."],
-  "scoring": [{"params": {"expected": "Paris"}, "weight": 1.0}],
-  "expected": "Paris"
+  "constraints": "Do not add commentary.",
+  "scoring": [{"params": {"ids": ["SRC-1"], "allow_extras": false}, "weight": 1}],
+  "expected": "Paris [SRC-1]"
 }

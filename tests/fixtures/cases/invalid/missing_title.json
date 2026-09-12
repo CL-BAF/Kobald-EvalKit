@@ -1,10 +1,10 @@
 {
-  "case_id": "invalid__missing_title",
+  "case_id": "missing_title",
   "suite": "evidence_grounding",
   "purpose": "Fixture: title key absent; loader must reject naming this file.",
-  "evidence": ["The capital of France is Paris."],
+  "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
   "instruction": "Answer with the capital city only.",
-  "constraints": ["Do not add commentary."],
-  "scoring": [{"type": "exact_match", "params": {"expected": "Paris"}, "weight": 1.0}],
-  "expected": "Paris"
+  "constraints": "Do not add commentary.",
+  "scoring": [{"type": "required_source_ids", "params": {"ids": ["SRC-1"], "allow_extras": false}, "weight": 1}],
+  "expected": "Paris [SRC-1]"
 }

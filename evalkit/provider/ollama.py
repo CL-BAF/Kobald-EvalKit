@@ -57,8 +57,14 @@ class OllamaProvider(Provider):
     """Generate via POST /api/generate; discover models via GET /api/tags.
 
     allow_non_loopback=True is an explicit configuration override for
-    non-loopback endpoints; construction explains the rule and fails
-    loudly on unresolvable hosts, so nothing goes silent. Note the
+    non-loopback endpoints; construction explains the rule so nothing
+    goes silent. Construction performs scheme + loopback checks ONLY:
+    DNS failures (including unresolvable hosts under the override)
+    surface at request time via the v0.1.6 error mapping, with the
+    "is Ollama running?" hint. Malformed URLs (e.g. unbracketed
+    IPv6 like "http://::1:11434") are rejected as non-loopback by
+    design — fail-closed, even though the message says non-loopback
+    rather than malformed. Note the
     boundary: EvalKit constrains the ENDPOINT (loopback), not the model
     tag — a ":cloud" model tag routes inference off-machine and is
     surfaced as a warning by Core's doctor/models commands.

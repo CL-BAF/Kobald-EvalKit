@@ -1,10 +1,10 @@
 {
-  "case_id": "invalid__missing_instruction",
+  "case_id": "missing_instruction",
   "suite": "evidence_grounding",
   "title": "Missing instruction field",
   "purpose": "Fixture: instruction key absent; loader must reject naming this file.",
-  "evidence": ["The capital of France is Paris."],
-  "constraints": ["Do not add commentary."],
-  "scoring": [{"type": "exact_match", "params": {"expected": "Paris"}, "weight": 1.0}],
-  "expected": "Paris"
+  "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
+  "constraints": "Do not add commentary.",
+  "scoring": [{"type": "required_source_ids", "params": {"ids": ["SRC-1"], "allow_extras": false}, "weight": 1}],
+  "expected": "Paris [SRC-1]"
 }

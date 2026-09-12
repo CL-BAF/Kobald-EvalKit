@@ -1,0 +1,47 @@
+{
+  "schema_version": "1",
+  "case_id": "so_strict_json_record",
+  "suite": "structured_output",
+  "title": "Emit a strict JSON record with exact fields",
+  "purpose": "Tests whether the model emits exactly one parseable JSON document with the exact requested fields and no extras. Downstream tooling that parses model output mechanically breaks on prose wrappers, trailing commentary, or bonus fields; this case measures that contract precisely, using first-position-only extraction so malformed-prefix responses fail visibly.",
+  "evidence": [
+    {
+      "id": "REG-1",
+      "text": "The Guild of Lamplighters registry entry no. 44 lists: keeper name Aldous Crane; lamp count 214; district Vellington Row; year of appointment 1908."
+    }
+  ],
+  "instruction": "You are given a registry excerpt. Return ONLY a JSON object with exactly these keys: \"keeper_name\" (string), \"lamp_count\" (number), \"district\" (string), \"year_appointed\" (number). Use the values from the excerpt. Do not add any other keys. Do not wrap the JSON in markdown fences or explanatory text.",
+  "constraints": "Response must be a single JSON object, no prose, no fences; exactly the four keys with correct value types (lamp_count and year_appointed numeric, others strings); no extra keys.",
+  "scoring": [
+    {
+      "type": "valid_json",
+      "params": {},
+      "weight": 3
+    },
+    {
+      "type": "required_fields",
+      "params": {
+        "fields": ["keeper_name", "lamp_count", "district", "year_appointed"],
+        "strict": true
+      },
+      "weight": 4
+    },
+    {
+      "type": "field_type",
+      "params": {
+        "field": "lamp_count",
+        "type": "number"
+      },
+      "weight": 2
+    },
+    {
+      "type": "field_type",
+      "params": {
+        "field": "year_appointed",
+        "type": "number"
+      },
+      "weight": 2
+    }
+  ],
+  "expected": "A single JSON object: {\"keeper_name\": \"Aldous Crane\", \"lamp_count\": 214, \"district\": \"Vellington Row\", \"year_appointed\": 1908} with no fences, prose, or extra keys."
+}

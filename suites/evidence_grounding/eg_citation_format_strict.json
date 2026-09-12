@@ -1,0 +1,38 @@
+{
+  "schema_version": "1",
+  "case_id": "eg_citation_format_strict",
+  "suite": "evidence_grounding",
+  "title": "Reproduce the exact citation token format",
+  "purpose": "Tests exact-format instruction-following for citation tokens. The instruction demands bracketed tokens matching the evidence IDs verbatim; models that paraphrase citations into prose ('Source 1', '(DOC-4)') or alter the ID casing fail visibly. This case exists so format-level compliance is measured honestly and separately from grounding: a model can know the right source and still be unusable in a pipeline that parses citation tokens mechanically.",
+  "evidence": [
+    {
+      "id": "DOC-4",
+      "text": "The Fenwick Ferry Company's 1923 timetable lists four daily crossings from Kettlebridge to Nether Fen, with the first departure at 6:40 in the morning and the last at 7:50 in the evening."
+    },
+    {
+      "id": "DOC-5",
+      "text": "A 1926 company memorandum reduces the service to two daily crossings during winter months, citing repeated fog delays at the Nether Fen landing."
+    }
+  ],
+  "instruction": "You are given two excerpts about the Fenwick Ferry Company. Question: How many daily crossings did the company operate in 1923, and what change was made in 1926? Answer in one or two sentences. You MUST cite sources using bracketed tokens exactly matching the excerpt IDs, like [DOC-4]. Do not write citations any other way (no parentheses, no prose references, no lowercase). Do not include facts that are not in the excerpts.",
+  "constraints": "Citations must appear as exact bracketed tokens [DOC-4] and [DOC-5]; paraphrased citations ('Source 1', '(DOC-4)', 'the 1923 timetable states') do not count; both excerpts must be cited since both are needed for the answer.",
+  "scoring": [
+    {
+      "type": "required_source_ids",
+      "params": {
+        "ids": ["DOC-4", "DOC-5"],
+        "allow_extras": false
+      },
+      "weight": 3
+    },
+    {
+      "type": "invented_citations",
+      "params": {
+        "max_allowed": 0,
+        "ids": ["DOC-4", "DOC-5"]
+      },
+      "weight": 4
+    }
+  ],
+  "expected": "One or two sentences stating four daily crossings in 1923 reduced to two in 1926 (winter, fog delays), citing exactly [DOC-4] and [DOC-5] in bracketed token form, no other citation style, no invented sources."
+}

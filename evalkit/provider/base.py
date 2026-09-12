@@ -38,9 +38,10 @@ class GenerationResult:
     provider, so the runner never has to scrape raw payloads for timing.
     Docs rule: sub-millisecond latency is never published as a claim
     (mock timings collapse to 0). raw holds the backend's own response
-    metadata and is always a dict, never None; it never contains
-    authorization headers, API keys, credentials or unrelated
-    environment data.
+    metadata and is always a dict, never None. Providers never INJECT
+    credential-like keys into raw or request headers (v0.1.8); raw
+    passes backend content through as-is, and persistence-level
+    redaction of credential-like keys is the store's responsibility.
     """
 
     text: str

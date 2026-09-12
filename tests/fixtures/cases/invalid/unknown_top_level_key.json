@@ -1,10 +1,12 @@
 {
-  "case_id": "missing_purpose",
+  "case_id": "unknown_top_level_key",
   "suite": "evidence_grounding",
-  "title": "Missing purpose field",
+  "title": "Unknown top-level key",
+  "purpose": "Fixture: contains an unrecognized top-level key (typo 'scorring'); loader must reject naming this file.",
   "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
   "instruction": "Answer with the capital city only.",
   "constraints": "Do not add commentary.",
   "scoring": [{"type": "required_source_ids", "params": {"ids": ["SRC-1"], "allow_extras": false}, "weight": 1}],
-  "expected": "Paris [SRC-1]"
+  "expected": "Paris [SRC-1]",
+  "scorring": "typo probe"
 }

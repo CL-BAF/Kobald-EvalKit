@@ -1,14 +1,15 @@
 {
-  "case_id": "valid__grounding_paris",
+  "schema_version": "1",
+  "case_id": "grounding_paris",
   "suite": "evidence_grounding",
   "title": "Capital of France",
   "purpose": "Valid minimal case: answer must restate the evidenced fact and not invent citations.",
-  "evidence": ["The capital of France is Paris."],
-  "instruction": "Using only the evidence provided, name the capital city. Cite the evidence lines you used.",
-  "constraints": ["Answer with the city name and citations only.", "Do not invent sources."],
+  "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
+  "instruction": "Using only the evidence provided, name the capital city. Cite the evidence line you used with a bracketed token like [SRC-1].",
+  "constraints": "Answer with the city name and citation only; do not invent sources.",
   "scoring": [
-    {"type": "exact_match", "params": {"expected": "Paris"}, "weight": 1.0},
-    {"type": "no_invented_citations", "params": {}, "weight": 1.0}
+    {"type": "required_source_ids", "params": {"ids": ["SRC-1"], "allow_extras": false}, "weight": 1},
+    {"type": "invented_citations", "params": {"max_allowed": 0, "ids": ["SRC-1"]}, "weight": 1}
   ],
-  "expected": "Paris [1]"
+  "expected": "Paris [SRC-1]"
 }

@@ -1,7 +1,8 @@
 {
-  "case_id": "missing_purpose",
-  "suite": "evidence_grounding",
-  "title": "Missing purpose field",
+  "case_id": "suite_mismatch",
+  "suite": "contradiction",
+  "title": "Suite field differs from parent directory",
+  "purpose": "Fixture: suite says contradiction but file lives in the evidence_grounding fixture dir; loader must reject naming this file.",
   "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
   "instruction": "Answer with the capital city only.",
   "constraints": "Do not add commentary.",

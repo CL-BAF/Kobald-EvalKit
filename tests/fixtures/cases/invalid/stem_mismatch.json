@@ -1,7 +1,8 @@
 {
-  "case_id": "missing_purpose",
+  "case_id": "stem_mismatch_x",
   "suite": "evidence_grounding",
-  "title": "Missing purpose field",
+  "title": "Filename stem differs from case_id",
+  "purpose": "Fixture: file on disk is stem_mismatch.json but case_id is stem_mismatch_x; loader must reject naming this file.",
   "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
   "instruction": "Answer with the capital city only.",
   "constraints": "Do not add commentary.",

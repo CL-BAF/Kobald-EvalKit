@@ -1,10 +1,11 @@
 {
-  "case_id": "missing_purpose",
+  "case_id": "scoring_missing_params",
   "suite": "evidence_grounding",
-  "title": "Missing purpose field",
+  "title": "Scoring entry missing params",
+  "purpose": "Fixture: scoring entry lacks params; loader must reject naming this file.",
   "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
   "instruction": "Answer with the capital city only.",
   "constraints": "Do not add commentary.",
-  "scoring": [{"type": "required_source_ids", "params": {"ids": ["SRC-1"], "allow_extras": false}, "weight": 1}],
+  "scoring": [{"type": "required_source_ids", "weight": 1}],
   "expected": "Paris [SRC-1]"
 }

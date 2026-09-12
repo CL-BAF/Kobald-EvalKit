@@ -1,7 +1,9 @@
 {
-  "case_id": "missing_purpose",
+  "schema_version": "2",
+  "case_id": "future_schema_version",
   "suite": "evidence_grounding",
-  "title": "Missing purpose field",
+  "title": "Unknown schema version",
+  "purpose": "Fixture: schema_version '2' is not accepted in v0.1; loader must reject naming this file.",
   "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
   "instruction": "Answer with the capital city only.",
   "constraints": "Do not add commentary.",

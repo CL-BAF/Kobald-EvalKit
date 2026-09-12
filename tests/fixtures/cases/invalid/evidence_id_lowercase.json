@@ -1,0 +1,11 @@
+{
+  "case_id": "evidence_id_lowercase",
+  "suite": "evidence_grounding",
+  "title": "Evidence ID not in token charset",
+  "purpose": "Fixture: evidence id 'src-1' is lowercase so the citation-token regex can never match it; loader must reject naming this file.",
+  "evidence": [{"id": "src-1", "text": "The capital of France is Paris."}],
+  "instruction": "Answer with the capital city only.",
+  "constraints": "Do not add commentary.",
+  "scoring": [{"type": "required_source_ids", "params": {"ids": ["src-1"], "allow_extras": false}, "weight": 1}],
+  "expected": "Paris [src-1]"
+}

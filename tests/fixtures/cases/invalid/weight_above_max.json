@@ -1,0 +1,11 @@
+{
+  "case_id": "weight_above_max",
+  "suite": "evidence_grounding",
+  "title": "Weight above maximum",
+  "purpose": "Fixture: weight > 5 upper bound; loader must reject naming this file.",
+  "evidence": [{"id": "SRC-1", "text": "The capital of France is Paris."}],
+  "instruction": "Answer with the capital city only.",
+  "constraints": "Do not add commentary.",
+  "scoring": [{"type": "required_source_ids", "params": {"ids": ["SRC-1"], "allow_extras": false}, "weight": 6}],
+  "expected": "Paris [SRC-1]"
+}

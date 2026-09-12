@@ -1,0 +1,50 @@
+{
+  "schema_version": "1",
+  "case_id": "eg_summarize_grounded",
+  "suite": "evidence_grounding",
+  "title": "Summarize using only provided evidence",
+  "purpose": "Tests grounded summarization: the model must produce a synthesis whose every factual claim traces to a cited provided source, with no imported background knowledge. Free summarization is where local models most often blend provided facts with plausible parametric additions; the unsupported-claim marker count makes that blending visible while the needs_human rule keeps genuinely unverifiable prose from being scored by a fake number.",
+  "evidence": [
+    {
+      "id": "OBS-1",
+      "text": "The Larkspur Valley Observatory's annual report for 1971 records 41 days of measurable rainfall in the valley that year, the lowest total in its records to that point, and notes that the observatory's rain gauge was recalibrated in March 1971."
+    },
+    {
+      "id": "OBS-2",
+      "text": "The observatory's 1976 report states that 1976 saw 63 days of measurable rainfall and that two storm events in November contributed nearly a third of the annual total."
+    },
+    {
+      "id": "OBS-3",
+      "text": "A 1977 maintenance memo records that the observatory's anemometer was replaced, and that the replacement was funded by the Larkspur Valley Grazing Association."
+    }
+  ],
+  "instruction": "You are given three excerpts from the Larkspur Valley Observatory records. Using ONLY these excerpts, write a short summary (2-4 sentences) of what the records say about rainfall in the valley. Cite each excerpt you use with bracketed tokens like [OBS-1]. Every factual statement must be attributable to a cited excerpt; do not add any fact that is not in the excerpts.",
+  "constraints": "Every factual sentence must carry a citation token; only OBS-1 and OBS-2 support rainfall statements (OBS-3 is a distractor about instruments); at most one uncited connective sentence tolerated; no citations to unprovided sources.",
+  "scoring": [
+    {
+      "type": "unsupported_claims",
+      "params": {
+        "max_allowed": 1,
+        "markers": ["the excerpts state", "according to", "the report records", "the memo records"]
+      },
+      "weight": 2
+    },
+    {
+      "type": "invented_citations",
+      "params": {
+        "max_allowed": 0,
+        "ids": ["OBS-1", "OBS-2", "OBS-3"]
+      },
+      "weight": 4
+    },
+    {
+      "type": "required_source_ids",
+      "params": {
+        "ids": ["OBS-1", "OBS-2"],
+        "allow_extras": true
+      },
+      "weight": 3
+    }
+  ],
+  "expected": "A 2-4 sentence summary covering 1971 (41 rain days, lowest to that point) and 1976 (63 rain days, November storms a third of the total), each claim cited to [OBS-1]/[OBS-2]; OBS-3 optional only if discussing the anemometer; no uncited factual claims beyond at most one connective sentence."
+}
