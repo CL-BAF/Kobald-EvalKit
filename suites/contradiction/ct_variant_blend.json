@@ -21,12 +21,11 @@
       "type": "lexical_contradiction",
       "params": {
         "pairs": [
-          ["wrayton mill was water-powered", "wrayton mill was steam-powered"],
-          ["denshaw mill was steam-powered", "denshaw mill was water-powered"],
           ["wrayton was water-powered", "wrayton was steam-powered"],
           ["denshaw was steam-powered", "denshaw was water-powered"],
           ["water-powered from its opening", "steam-powered from its first expansion"],
-          ["drawing from the wray beck", "boiler seat is visible"]
+          ["water-powered from its opening", "boiler seat is visible in the yard"],
+          ["steam-powered from its first expansion", "wheelhouse survives"]
         ]
       },
       "weight": 4
