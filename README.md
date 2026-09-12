@@ -6,6 +6,9 @@ universal intelligence score — a way to re-run the same behavioural probes
 against the same model with the same options and see exactly what passed,
 what failed, and what needs a human.
 
+EvalKit is an independent project, related in spirit to a private codebase
+(Kobald) but sharing no code, imports, architecture or protocol with it.
+
 - Python >= 3.10, **stdlib-only runtime** (pytest only for development).
 - Deterministic scoring: same response + same case = same result, forever.
 - Unreliable judgement is explicitly flagged `needs_human`, never guessed.
@@ -20,8 +23,16 @@ cd Kobald-EvalKit
 python -m pip install -e .
 ```
 
-Requires an Ollama server (`ollama serve`) for real runs. No network access
-beyond your configured endpoint.
+### Ollama setup
+
+1. Install [Ollama](https://ollama.com/download) and start the server:
+   `ollama serve` (or run the desktop app).
+2. Pull a model: `ollama pull llama3.1:8b` (any tag from `ollama list` works).
+3. Check EvalKit can see it: `evalkit doctor --provider ollama --model llama3.1:8b`.
+
+Ollama listens on `http://127.0.0.1:11434` by default — EvalKit's default
+endpoint. Only that loopback endpoint is used by default; anything else
+requires the explicit `--allow-non-loopback` override.
 
 ## Quick start
 
@@ -53,6 +64,39 @@ Every `run` persists `runs/<run_id>/result.json` + `report.md`
 per-case PASS/FAIL/HUMAN/ERROR plus the weighted pass rate; the Markdown
 report includes every check's detail, the aggregate formula, and its
 limitations.
+
+Example terminal summary (mock provider, real output — the mock fallback
+text cites nothing, so citation-demanding cases fail; that is the scorer
+working):
+
+```
+Run 20260912T141221Z-3fcd838c
+provider=mock model=mock
+cases: 5  PASS: 1  FAIL: 4  NEEDS HUMAN: 0  ERROR: 0
+weighted pass rate: 16.7%
+duration: 0.0s
+  [FAIL] eg_citation_format_strict
+  [PASS] eg_flag_insufficiency
+  ...
+```
+
+And the top of the stored `report.md`:
+
+```markdown
+## Summary
+
+- Cases: 5 (passed 1, failed 4, needs_human 0, errors 0)
+- Weighted pass rate: **16.7%**
+- Suite `evidence_grounding`: 1/5 passed
+
+> Aggregate formula: weighted_pass_rate = sum(weights of passed cases) /
+> sum(weights of all scored cases), over non-needs_human cases only
+> - weights are ordinal design choices, not measured importance
+> - cases are small behavioural probes, not a representative sample of
+>   any population
+> - rates from different model sizes, quantisations or option sets are
+>   not comparable unless the user controls those variables
+```
 
 ## How scoring works (the honest version)
 
@@ -95,8 +139,10 @@ faithfulness, subtle (non-lexical) contradictions, anything about model
 | `mixed_evidence` | — | planned: weigh conflicting evidence (needs_human by design) |
 
 All suite content is invented (fictional towns, studies, records) and
-redistributable. See [`docs/suites/`](docs/suites/) and
-[`docs/sketches/`](docs/sketches/) for design notes.
+redistributable. [`docs/suites/`](docs/suites/) holds the user-facing
+per-suite reference (what each case measures and its stated limitations);
+[`docs/sketches/`](docs/sketches/) are internal design artifacts and may
+lag the shipped cases.
 
 ## CLI reference
 
@@ -165,6 +211,34 @@ Layout: `evalkit/` (CLI, config, loader, runner, scoring, store, reports),
 none. See [`docs/case-schema.md`](docs/case-schema.md) to write cases and
 [`docs/scoring.md`](docs/scoring.md) for the scorer registry and its
 honesty contract.
+
+## Limitations (stated plainly)
+
+- The scorer is lexical/structural, not semantic. A paraphrased citation
+  ("Source 1" instead of `[SRC-1]`) fails *visibly* as a format failure;
+  a paraphrased contradiction can pass `lexical_contradiction` undetected.
+  Both facts are recorded in the check details and the docs.
+- Marker compliance is not calibrated confidence: a model can emit the
+  required marker without reasoning well about its own uncertainty.
+- The weighted pass rate is a reporting convenience, not a benchmark
+  number — see the formula's limitations above.
+- EvalKit constrains the endpoint, not the model tag (see `:cloud` above).
+- Reports are per-run and per-suite; `compare` only compares runs whose
+  configuration matches. Nothing in v0.1 aggregates across model families
+  or draws conclusions about "intelligence".
+
+## Contributing
+
+Issues and pull requests are welcome. Ground rules:
+
+- Runtime stays **stdlib-only**; every dependency needs a documented reason.
+- Every scoring rule is deterministic or explicitly `needs_human` — no
+  fuzzy judgement smuggled in as a number.
+- Case content must be invented and redistributable (no copyrighted
+  corpora, nothing derived from private codebases).
+- Tests are offline by default; anything needing a live server is marked
+  `live` and excluded from the default run.
+- Small, meaningful commits; never commit `runs/` output.
 
 ## License
 
