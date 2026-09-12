@@ -18,8 +18,8 @@
       "text": "The Bexmill corporation accounts for 1907 list toll receipts of 612 pounds for that year only; earlier years are not itemised."
     }
   ],
-  "instruction": "You are given three excerpts from the Bexmill toll records. Question: What were Bexmill's total toll receipts in pounds for 1905? If the excerpts do not contain the answer, you MUST state exactly \"INSUFFICIENT EVIDENCE\" (with the quotation marks). Do not invent numbers.",
-  "constraints": "If answering from the excerpts: impossible, no pound total for 1905 exists in them. The response must contain the exact quoted marker \"INSUFFICIENT EVIDENCE\"; must not invent any pound figure; must not cite sources not provided.",
+  "instruction": "You are given three excerpts from the Bexmill toll records. Question: What were Bexmill's total toll receipts for 1905, expressed as a monetary sum? If the excerpts do not contain the answer, you MUST state exactly \"INSUFFICIENT EVIDENCE\" (with the quotation marks). Do not invent numbers, and do not quote monetary sums from the excerpts as if they answered the question.",
+  "constraints": "If answering from the excerpts: impossible, no monetary sum for 1905 exists in them. The response must contain the exact quoted marker \"INSUFFICIENT EVIDENCE\"; must not invent any figure; must not quote TOL-3's 1907 sum as if it answered the 1905 question (forbidden pattern catches 'N pounds'); must not cite sources not provided.",
   "scoring": [
     {
       "type": "insufficiency_marker",
@@ -40,5 +40,5 @@
       "weight": 3
     }
   ],
-  "expected": "A short response stating the excerpts do not give a pound total for 1905, containing the exact quoted marker \"INSUFFICIENT EVIDENCE\" at least once, with no invented pound figure and no invented citations."
+  "expected": "A short response stating the excerpts do not give a monetary total for 1905, containing the exact quoted marker \"INSUFFICIENT EVIDENCE\" at least once, with no invented figure and no invented citations. Note: quoting TOL-3's 1907 sum (612 pounds) as if it answered the 1905 question fails via the forbidden pattern — that is deliberate: the sum exists in the excerpts but not for 1905."
 }
