@@ -54,12 +54,17 @@ violated pair).
   ≥ 1. Evidence-detail phrases from DIFFERENT subjects must never be paired
   (that made the original pairs 3-6 inverted: a faithful both-sources
   citation contained both members). The landed pair list is
-  same-mill attribution contrasts only.
-- SWAP-INVISIBILITY (corollary of the pair rule): a fully-paraphrased
-  single-side swap ("Denshaw was water-powered... Wrayton was
-  steam-powered" with no pinned phrase pair) escapes the pair check —
-  the pairs catch BLENDING, not wrong-assertion repetition. Documented
-  boundary, covered by the needs_human philosophy.
+  same-mill attribution contrasts, plus one swap-catcher pair whose two
+  members are BOTH evidence-contradicting claims ('Wrayton mill was
+  steam-powered' / 'Denshaw mill was water-powered'): a compliant response
+  contains neither, a single-side swap contains both, so the swap trips
+  without re-introducing value-correctness scoring (the pair checks
+  co-presence of two wrong claims, not truth).
+- SWAP-DETECTION SCOPE: the swap-catcher pair fires when the response
+  asserts BOTH wrong attributions in the pinned phrasings; a swap phrased
+  entirely outside the pinned phrases remains invisible (string-keyed
+  boundary, same as below). The pairs catch BLENDING and pinned-phrase
+  swaps, not arbitrary paraphrased wrong-assertions.
 - ct_single_fact_consistent misstatement-invisibility (D4-2, option b):
   a response repeating only the misstatement passes the pair check (one
   side only). The honest boundary is that lexical_contradiction catches
