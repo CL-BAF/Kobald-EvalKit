@@ -3,7 +3,7 @@
   "case_id": "eg_summarize_grounded",
   "suite": "evidence_grounding",
   "title": "Summarize using only provided evidence",
-  "purpose": "Tests grounded summarization: the model must produce a synthesis whose every factual claim traces to a cited provided source, with no imported background knowledge. Free summarization is where local models most often blend provided facts with plausible parametric additions; the unsupported-claim marker count makes that blending visible while the needs_human rule keeps genuinely unverifiable prose from being scored by a fake number.",
+  "purpose": "Tests grounded summarization: the model must produce a synthesis whose every factual claim traces to a cited provided source, with no imported background knowledge. Free summarization is where local models most often blend provided facts with plausible parametric additions; the unsupported-claim marker count makes that blending visible while the needs_human rule keeps genuinely unverifiable prose from being scored by a fake number. The scoring markers are FAILURE markers: phrases an ungrounded generalizing summary would contain (e.g. 'rainfall across the region'); the compliant summary provably avoids them.",
   "evidence": [
     {
       "id": "OBS-1",
@@ -25,7 +25,7 @@
       "type": "unsupported_claims",
       "params": {
         "max_allowed": 1,
-        "markers": ["the excerpts state", "according to", "the report records", "the memo records"]
+        "markers": ["rainfall across the region", "recovered steadily"]
       },
       "weight": 2
     },

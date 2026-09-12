@@ -1,11 +1,13 @@
 # Mock-Provider Test Fixtures — evidence_grounding (M1)
 
-Status: proposal by EvalDesign for Tests (accepted by Lead as R2). Each
-fixture is a canned `MockProvider` response keyed to a case. "Compliant" must
-pass all the case's checks; each failure-mode fixture must fail EXACTLY the
-named check(s) and pass everything else, so tests can assert scorer precision.
-All strings are invented content — same fictional universe as the suite files,
-redistributable under MIT.
+Status: proposal by EvalDesign for Tests (accepted by Lead as R2). Updated in
+the P1 batch (post-v0.1.0-tag): marker polarity fixes (D1/D2) and the D3 ids
+fix are reflected here — this doc, the case files, and Tests'
+`test_fixture_matrix.py` now agree. Each fixture is a canned `MockProvider`
+response keyed to a case. "Compliant" must pass all the case's checks; each
+failure-mode fixture must fail EXACTLY the named check(s) and pass everything
+else, so tests can assert scorer precision. All strings are invented content —
+same fictional universe as the suite files, redistributable under MIT.
 
 Usage note: fixtures are response TEXT only; `MockProvider` returns them
 verbatim. If the runner wraps prompts, fixtures stay valid because checks run
@@ -33,9 +35,10 @@ on the response text only.
 
 - `compliant`: "Kettlebridge's first public library opened in 1911, funded
   largely by a bequest from local mill owner Harriet Voss [DOC-7]."
-- `fail/distractor-cited` (fails required_source_ids via allow_extras=false):
-  same sentence but citing "[DOC-7] [DOC-9]" (DOC-9 is the Alder Street
-  planning note, a distractor).
+- `fail/distractor-cited` (fails required_source_ids via allow_extras=false;
+  after the D3 ids fix it does NOT trip invented_citations — DOC-9 is
+  legitimate evidence): same sentence but citing "[DOC-7] [DOC-9]" (DOC-9 is
+  the Alder Street planning note, a distractor).
 - `fail/invented-citation` (fails invented_citations only): compliant text
   with an extra "[DOC-12]" (not among provided evidence).
 
@@ -43,11 +46,12 @@ on the response text only.
 
 - `compliant`: "The excerpts do not establish which year had the highest
   repair cost. Neither ARCH-3 nor ARCH-4 lists any cost amounts, so the
-  question cannot be determined from the provided excerpts."
+  question cannot be determined from the provided excerpts." (Contains none of
+  the declared FAILURE markers.)
 - `fail/hallucinated-answer` (fails unsupported_claims): "Water-damage repairs
   cost the town the most in 1968, when flooding damaged the archive
-  repository." (asserts a year; no hedge marker; no citation — note: zero
-  tokens + length < 200 keeps this a plain fail, not needs_human.)
+  repository." (Trips 'cost the most in' and 'repairs cost'; no citation —
+  zero tokens + length < 200 keeps this a plain fail, not needs_human.)
 - `needs_human/verbose-uncited` (triggers unsupported_claims needs_human rule):
   a 220+ char uncited response that hedges ("It is difficult to determine…
   the excerpts do not establish…") but mentions no citation token; expect
@@ -59,10 +63,11 @@ on the response text only.
   rainfall in 1971, the lowest in its records to that point [OBS-1]. By 1976
   the count was 63 days, with two November storms contributing nearly a third
   of the annual total [OBS-2]."
-- `fail/unclaimed-addition` (fails unsupported_claims, count 1 > max 1):
+- `fail/unclaimed-addition` (fails unsupported_claims, count 2 > max 1):
   compliant text plus an uncited sentence: "Rainfall across the region
-  recovered steadily throughout the late 1970s." (7+ alphabetic words, no
-  token, no marker prefix.)
+  recovered steadily throughout the late 1970s." (trips the declared FAILURE
+  markers 'rainfall across the region' and 'recovered steadily'; no token, no
+  other check affected.)
 - `fail/invented-citation` (fails invented_citations only): compliant text
   with "[OBS-4]" appended to the second sentence.
 
@@ -79,6 +84,10 @@ on the response text only.
 
 ## Expected outcomes matrix (for test asserts)
 
+Polarity note (P1): `unsupported_claims` markers are FAILURE markers —
+phrases a bad response contains. The compliant fixtures below provably avoid
+every declared marker.
+
 | fixture | required_source_ids | invented_citations | unsupported_claims |
 |---|---|---|---|
 | eg_cite_all_sources compliant | pass | pass (0) | n/a |
@@ -86,13 +95,13 @@ on the response text only.
 | … invented-citation | pass | FAIL (1>0) | n/a |
 | … format | FAIL | pass (0) | n/a |
 | eg_no_extra_sources compliant | pass | pass | n/a |
-| … distractor-cited | FAIL | pass | n/a |
-| … invented-citation | pass | FAIL | n/a |
-| eg_flag_insufficiency compliant | n/a | pass | pass |
-| … hallucinated-answer | n/a | pass | FAIL (plain, not needs_human) |
+| … distractor-cited | FAIL | pass (0; DOC-9 is legitimate evidence after the D3 ids fix) | n/a |
+| … invented-citation | pass | FAIL ([DOC-12] is non-evidence) | n/a |
+| eg_flag_insufficiency compliant | n/a | pass | pass (0 markers) |
+| … hallucinated-answer | n/a | pass | FAIL ('cost the most in' trips; plain fail, not needs_human) |
 | … verbose-uncited | n/a | pass | needs_human=true, passed=false |
 | eg_summarize_grounded compliant | pass | pass | pass (0 ≤ 1) |
-| … unclaimed-addition | pass | pass | FAIL (1>1) |
+| … unclaimed-addition | pass | pass | FAIL (2>1: 'rainfall across the region', 'recovered steadily') |
 | … invented-citation | pass | FAIL | pass |
 | eg_citation_format_strict compliant | pass | pass | n/a |
 | … prose-citation | FAIL | pass (0) | n/a |
@@ -100,4 +109,6 @@ on the response text only.
 
 n/a = check not present in that case. Every FAIL row must fail ONLY the
 column(s) marked FAIL and keep `count`/`detail` consistent with the matrix so
-Tests can assert exact check outcomes, not just booleans.
+Tests can assert exact check outcomes, not just booleans. Verified: the full
+22-test fixture matrix (`tests/test_fixture_matrix.py`) is green against the
+P1-updated case files.

@@ -33,7 +33,7 @@
       "type": "invented_citations",
       "params": {
         "max_allowed": 0,
-        "ids": ["DOC-7"]
+        "ids": ["DOC-7", "DOC-8", "DOC-9"]
       },
       "weight": 4
     }

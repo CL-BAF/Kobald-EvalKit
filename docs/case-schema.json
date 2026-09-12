@@ -36,6 +36,7 @@
     "evidence": {
       "type": "array",
       "maxItems": 12,
+      "description": "May be empty for suites where no documents are provided (e.g. fabricated_citations); the loader has no minimum. Ground truth: evalkit/cases.py — rejects a missing 'id'/'text' and unknown keys inside items; the evidence array itself may be empty.",
       "items": {
         "type": "object",
         "additionalProperties": false,
