@@ -151,3 +151,94 @@ class TestSilentZeroImpossible:
         with pytest.raises(ValueError):
             record = make_error_record(summary)
             terminal_summary(record)  # pragma: no cover - unreachable post-fix
+
+
+class TestMarkdownReportContent:
+    """Content-not-existence asserts for the user-facing Markdown report."""
+
+    def _record(self, statuses):
+        from evalkit.provider.base import GenerationResult
+        from evalkit.scoring import score_case as _unused  # noqa: F401
+        from evalkit.cases import EvidenceItem, EvalCase, ScoringRule
+        from evalkit.reports import markdown_report
+
+        generation = GenerationResult(text="Paris [SRC-1]", model="m", provider="mock", elapsed_ms=0.0)
+        results = []
+        for status in statuses:
+            if status == "error":
+                results.append(
+                    CaseResult.from_outcome(case_id=f"c_{status}_{len(results)}", suite="s", score=None, error="provider unreachable")
+                )
+                continue
+            if status == "needs_human":
+                check = __import__("evalkit.models", fromlist=["Check"]).Check(
+                    name="conflict_assessment", passed=False, detail="human review", needs_human=True
+                )
+                score = ScoreResult.from_checks([check])
+            else:
+                score = ScoreResult.from_checks(
+                    [__import__("evalkit.models", fromlist=["Check"]).Check(name="x", passed=status == "passed", detail="d")]
+                )
+            results.append(
+                CaseResult.from_outcome(
+                    case_id=f"c_{status}_{len(results)}", suite="s", score=score, generation=generation
+                )
+            )
+        record = make_error_record(
+            run_summary([r.status for r in results], [], 2.0)
+        )
+        record = RunRecord(
+            run_id=record.run_id,
+            timestamp_utc=record.timestamp_utc,
+            evalkit_version=record.evalkit_version,
+            provider=record.provider,
+            model=record.model,
+            config=record.config,
+            results=results,
+            summary=record.summary,
+            duration_ms=record.duration_ms,
+        )
+        return record, markdown_report(record)
+
+    def test_formula_and_limitations_block_present(self):
+        _, md = self._record(["passed"])
+        assert "Aggregate formula:" in md
+        assert "weighted" in md.lower()
+        assert any("limitation" in line.lower() or "not comparable" in line.lower() for line in md.splitlines())
+
+    def test_per_case_table_with_statuses(self):
+        _, md = self._record(["passed", "failed"])
+        assert "| Case | Suite | Status | Checks |" in md
+        assert "| `c_passed_0` | s | passed |" in md
+        assert "| `c_failed_1` | s | failed |" in md
+
+    def test_needs_human_section_lists_check_guidance(self):
+        _, md = self._record(["needs_human"])
+        assert "## Cases needing human review" in md
+        assert "**conflict_assessment** (needs human): human review" in md
+
+    def test_error_case_renders_error_text(self):
+        _, md = self._record(["error"])
+        assert "| `c_error_0` | s | error | provider unreachable |" in md
+
+    def test_failed_check_details_section(self):
+        _, md = self._record(["failed"])
+        assert "## Failed check details" in md
+        assert "**x**: d" in md
+
+    def test_zero_scoreable_cases_wording(self):
+        # All-needs_human run: rate must render the documented wording,
+        # never 0%/NaN (Reviewer pin 2).
+        _, md = self._record(["needs_human"])
+        assert "n/a (no scoreable cases" in md
+        assert "0.0%" not in md.split("Weighted pass rate")[1].splitlines()[0]
+
+    def test_honesty_note_in_every_report(self):
+        _, md = self._record(["passed"])
+        assert "## Notes on scoring honesty" in md
+        assert "never silently pass or fail" in md
+
+    def test_config_snapshot_fields_in_report(self):
+        _, md = self._record(["passed"])
+        assert "Base URL: `http://127.0.0.1:11434`" in md
+        assert "Suites: s" in md
