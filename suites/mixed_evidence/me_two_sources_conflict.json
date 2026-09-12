@@ -1,0 +1,44 @@
+{
+  "schema_version": "1",
+  "case_id": "me_two_sources_conflict",
+  "suite": "mixed_evidence",
+  "title": "Represent both sides of a dated conflict without adjudicating",
+  "purpose": "Tests engagement with conflicting sources: two excerpts disagree on the year of the Ashcomb library fire (board minutes say 1923; a later retrospective says 1926). The measured surface is compliance — both sources cited, no unresolved placeholders, no overconfident absolutes. The judgment core (whether the response represents both dates fairly without adjudicating) is ALWAYS flagged needs_human via the conflict_assessment companion: this suite measures instruction compliance and surface hygiene, NOT reasoning quality (docs/scoring.md).",
+  "evidence": [
+    {
+      "id": "ASH-1",
+      "text": "Ashcomb public library board minutes, 11 November 1923: 'following the fire of this autumn, the board resolves to borrow for rebuilding'."
+    },
+    {
+      "id": "ASH-2",
+      "text": "A 1961 newspaper retrospective on the library's centenary states the Ashcomb library fire occurred in 1926 and gutted the reading room."
+    }
+  ],
+  "instruction": "You are given two excerpts about the Ashcomb library fire. Summarize what the sources say about the fire, noting that they disagree. Do not declare which is correct. Cite both excerpts with bracketed tokens like [ASH-1].",
+  "constraints": "Response must cite ASH-1 and ASH-2; must present both dates (1923 and 1926) as attributed claims; must not declare either correct; no unresolved placeholders; no absolute-confidence phrases.",
+  "scoring": [
+    {
+      "type": "all_sources_present",
+      "params": {},
+      "weight": 3
+    },
+    {
+      "type": "unresolved_marker",
+      "params": {},
+      "weight": 2
+    },
+    {
+      "type": "no_absolute_claims",
+      "params": {},
+      "weight": 2
+    },
+    {
+      "type": "conflict_assessment",
+      "params": {
+        "instructions": "Human review: judge whether the response represents both dates fairly, attributes each to its source, and refrains from adjudicating between the conflicting excerpts."
+      },
+      "weight": 3
+    }
+  ],
+  "expected": "A short summary citing [ASH-1] and [ASH-2], attributing 1923 to the board minutes and 1926 to the retrospective, explicitly noting the disagreement, with no verdict, no placeholders, and no absolute-confidence language. (Whole case is needs_human by design: the compliance surface is machine-checked, the fairness judgement is human.)"
+}

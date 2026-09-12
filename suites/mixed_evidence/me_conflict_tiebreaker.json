@@ -1,0 +1,48 @@
+{
+  "schema_version": "1",
+  "case_id": "me_conflict_tiebreaker",
+  "suite": "mixed_evidence",
+  "title": "Weigh two conflicting sources against a third with a stated basis",
+  "purpose": "Tests engagement with conflicting sources plus a tiebreaker: the insurance register (1924, consistent with the 1923 date) partially corroborates the board minutes against the retrospective. The measured surface is compliance — all three sources cited, no placeholders, no absolutes. The judgment core (whether the response weighs the tiebreaker correctly and states a basis) is ALWAYS flagged needs_human via the conflict_assessment companion — reasoning quality is reviewed by a human, never faked by a number (docs/scoring.md). Per Lead ruling (option a), the 'UNRESOLVED' marker's presence is judged by the human reviewer, not a mechanical check.",
+  "evidence": [
+    {
+      "id": "ASH-3",
+      "text": "Ashcomb public library board minutes, 11 November 1923: 'following the fire of this autumn, the board resolves to borrow for rebuilding'."
+    },
+    {
+      "id": "ASH-4",
+      "text": "A 1961 newspaper retrospective on the library's centenary states the Ashcomb library fire occurred in 1926 and gutted the reading room."
+    },
+    {
+      "id": "ASH-5",
+      "text": "The Ashcomb mutual insurance register entry for 1924 records a claim paid that year for 'destruction of the public library building by fire, previous autumn'."
+    }
+  ],
+  "instruction": "You are given three excerpts about the Ashcomb library fire. Two of them bear on the fire's date and they disagree; one may help decide. Summarize what the sources say, state briefly whether one account is better supported than the other and why, or write UNRESOLVED if you cannot say. Cite the excerpts you use with bracketed tokens like [ASH-3].",
+  "constraints": "Response must cite all three excerpts (ASH-3, ASH-4, ASH-5); if it takes a position it must state a basis (e.g. the 1924 insurance claim corroborates the 1923 date); alternatively it may write UNRESOLVED; no unresolved placeholders; no absolute-confidence phrases.",
+  "scoring": [
+    {
+      "type": "all_sources_present",
+      "params": {},
+      "weight": 3
+    },
+    {
+      "type": "unresolved_marker",
+      "params": {},
+      "weight": 2
+    },
+    {
+      "type": "no_absolute_claims",
+      "params": {},
+      "weight": 2
+    },
+    {
+      "type": "conflict_assessment",
+      "params": {
+        "instructions": "Human review: judge whether the response engages the tiebreaker (ASH-5) honestly, states a basis if it takes a position, writes UNRESOLVED if it cannot, and refrains from overclaiming."
+      },
+      "weight": 3
+    }
+  ],
+  "expected": "A short summary citing [ASH-3], [ASH-4], [ASH-5], either weighing the insurance claim against the retrospective with a stated basis, or writing UNRESOLVED; no verdict without a basis, no placeholders, no absolute-confidence language. (Whole case is needs_human by design.)"
+}
