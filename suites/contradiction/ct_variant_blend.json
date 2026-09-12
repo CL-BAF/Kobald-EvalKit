@@ -15,7 +15,7 @@
     }
   ],
   "instruction": "You are given two excerpts about two mills. In one or two sentences, state which mill was water-powered and which was steam-powered, exactly as the excerpts say. Do not speculate about conversions or any history not in the excerpts. Cite the excerpts you use with bracketed tokens like [PWR-1].",
-  "constraints": "Response must attribute water power to Wrayton and steam power to Denshaw; must not assert the swapped attribution; must not invent conversion events; must cite PWR-1 and PWR-2 in token form.",
+  "constraints": "Response must attribute water power to Wrayton and steam power to Denshaw; must not assert the swapped attribution for either mill; must not invent conversion events; must cite PWR-1 and PWR-2 in token form. Honesty note: the lexical pairs catch blended or swapped assertions only when the pinned phrases appear; a fully paraphrased swap may be invisible to the scorer (stated limitation, docs/scoring.md).",
   "scoring": [
     {
       "type": "lexical_contradiction",
@@ -24,8 +24,9 @@
           ["wrayton was water-powered", "wrayton was steam-powered"],
           ["denshaw was steam-powered", "denshaw was water-powered"],
           ["water-powered from its opening", "steam-powered from its first expansion"],
-          ["water-powered from its opening", "boiler seat is visible in the yard"],
-          ["steam-powered from its first expansion", "wheelhouse survives"]
+          ["wheelhouse survives", "boiler seat is visible in the yard"],
+          ["drawing from the wray beck", "boiler seat is visible in the yard"],
+          ["drawing from the wray beck", "steam-powered"]
         ]
       },
       "weight": 4
