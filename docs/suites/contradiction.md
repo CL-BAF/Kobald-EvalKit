@@ -46,12 +46,26 @@ violated pair).
   underlying material remains contradictory; the case checks only that the
   response does not blend both sides.
 - String-keyed, not NLI: paraphrases WITHOUT the pinned phrases are
-  invisible (verified: a fully-paraphrased attribution swap escapes the
-  pairs). This is the conservative design; semantic judgement stays
+  invisible. This is the conservative design; semantic judgement stays
   needs_human elsewhere.
-- The pairs catch BLENDING, not wrong-value-only repetition: a response
-  that repeats only the misstatement passes the pair check (one side only).
-  That residual is visible in the fixture matrix as a known-pass-with-caveat,
-  and is a documented boundary, not a defect.
+- PAIR-FORMATION RULE (D4-1, Lead ruling): each pair's members must be
+  MUTUALLY EXCLUSIVE claims about the SAME fact — a faithful response
+  citing both sources must trip ZERO pairs; a blended response must trip
+  ≥ 1. Evidence-detail phrases from DIFFERENT subjects must never be paired
+  (that made the original pairs 3-6 inverted: a faithful both-sources
+  citation contained both members). The landed pair list is
+  same-mill attribution contrasts only.
+- SWAP-INVISIBILITY (corollary of the pair rule): a fully-paraphrased
+  single-side swap ("Denshaw was water-powered... Wrayton was
+  steam-powered" with no pinned phrase pair) escapes the pair check —
+  the pairs catch BLENDING, not wrong-assertion repetition. Documented
+  boundary, covered by the needs_human philosophy.
+- ct_single_fact_consistent misstatement-invisibility (D4-2, option b):
+  a response repeating only the misstatement passes the pair check (one
+  side only). The honest boundary is that lexical_contradiction catches
+  BLENDING, not wrong-value repetition; a must-contain-correct-value check
+  would re-introduce value-correctness scoring ruled out at G3. Documented
+  here + in case constraints + as a documented-pass-with-caveat fixture
+  row for Tests.
 - Pair re-tuning during landing removed cross-case false-positive pairs
   (Reviewer's collision procedure applied in-flight).
