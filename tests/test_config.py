@@ -147,7 +147,7 @@ class TestValidation:
 
 
 class TestSecurityPins:
-    def test_allow_non_loopback_not_env_settable(self, monkeypatch, tmp_path, monkeypatch2=None):
+    def test_allow_non_loopback_not_env_settable(self, monkeypatch):
         # v0.1.6 Reviewer bar: the override must require named intent in a
         # config file or CLI override — NO environment variable may set it.
         monkeypatch.setenv("EVALKIT_ALLOW_NON_LOOPBACK", "1")
