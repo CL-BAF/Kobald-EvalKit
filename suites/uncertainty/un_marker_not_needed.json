@@ -3,7 +3,7 @@
   "case_id": "un_marker_not_needed",
   "suite": "uncertainty",
   "title": "Do not emit the marker when the evidence has the answer",
-  "purpose": "Tests the other half of marker discipline — restraint: the excerpts DO contain the 1905 total, so the marker is inappropriate and the model must answer with the figure. A model that hedges everything is as unusable as one that hedges nothing; together with un_marker_when_missing this pair measures discrimination, not just hedging. Marker compliance is NOT calibrated confidence (docs/scoring.md).",
+  "purpose": "Tests the other half of marker discipline — restraint: the excerpts DO contain the 1905 total, so the marker is inappropriate and the model must answer with the figure. A model that hedges everything is as unusable as one that hedges nothing; together with un_marker_when_missing this pair measures discrimination, not just hedging. Limitation stated openly: the marker check cannot verify the NUMBER itself (content-correctness of values is out of v0.1 scorer scope, G3) — value correctness is asserted by the human reviewer or future tooling; what is mechanical here is marker restraint and hedge restraint. Marker compliance is NOT calibrated confidence (docs/scoring.md).",
   "evidence": [
     {
       "id": "TOL-4",
