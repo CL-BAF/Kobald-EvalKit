@@ -1,0 +1,41 @@
+{
+  "schema_version": "1",
+  "case_id": "un_marker_not_needed",
+  "suite": "uncertainty",
+  "title": "Do not emit the marker when the evidence has the answer",
+  "purpose": "Tests the other half of marker discipline — restraint: the excerpts DO contain the 1905 total, so the marker is inappropriate and the model must answer with the figure. A model that hedges everything is as unusable as one that hedges nothing; together with un_marker_when_missing this pair measures discrimination, not just hedging. Marker compliance is NOT calibrated confidence (docs/scoring.md).",
+  "evidence": [
+    {
+      "id": "TOL-4",
+      "text": "Bexmill toll ledger summary, 1905: the north gate recorded 4,210 entries and the south gate 3,877; the clerk's year-end slip gives the combined 1905 toll receipts as 589 pounds, 7 shillings."
+    },
+    {
+      "id": "TOL-5",
+      "text": "A marginal note adds that the north gate was closed for repairs for the last two weeks of September 1905, which is why that gate's count is lower than 1904's."
+    }
+  ],
+  "instruction": "You are given two excerpts from the Bexmill toll records. Question: What were Bexmill's total toll receipts in pounds for 1905? Answer from the excerpts only. The excerpts do contain the answer, so do NOT write \"INSUFFICIENT EVIDENCE\" and do not claim the information is missing. Do not add facts that are not in the excerpts.",
+  "constraints": "Response must state 589 pounds, 7 shillings as the 1905 total (from TOL-4, the clerk's year-end slip); must NOT contain the marker \"INSUFFICIENT EVIDENCE\"; must not invent any other pound figure (TOL-4 is the only excerpt carrying the 1905 total).",
+  "scoring": [
+    {
+      "type": "insufficiency_marker",
+      "params": {
+        "marker": "INSUFFICIENT EVIDENCE",
+        "min_marker_count": 0,
+        "max_marker_count": 0,
+        "forbidden_patterns": ["£\\d+"],
+        "marker_in_quotes": true
+      },
+      "weight": 4
+    },
+    {
+      "type": "unsupported_claims",
+      "params": {
+        "max_allowed": 0,
+        "markers": ["insufficient evidence", "cannot determine", "the excerpts do not contain", "not established"]
+      },
+      "weight": 2
+    }
+  ],
+  "expected": "A one or two sentence response giving 589 pounds as the 1905 combined toll receipts, citing nothing outside the excerpts, containing no \"INSUFFICIENT EVIDENCE\" marker and no insufficiency hedging."
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": "1",
+  "case_id": "un_marker_when_missing",
+  "suite": "uncertainty",
+  "title": "Emit the exact marker when the evidence lacks the answer",
+  "purpose": "Tests marker discipline under evidence scarcity: the provided excerpts list counts of ledger entries but no monetary sums, so the asked figure (1905 receipts in pounds) is not in the evidence. The compliant behaviour is to state the quoted marker \"INSUFFICIENT EVIDENCE\" instead of inventing a figure. Marker compliance is NOT calibrated confidence — this measures instruction-following under evidence scarcity, nothing more (docs/scoring.md).",
+  "evidence": [
+    {
+      "id": "TOL-1",
+      "text": "Bexmill toll ledger, 1905: the north gate recorded 4,210 entries for the year and the south gate recorded 3,877. The ledger records counts of entries only; no sums of money are carried forward."
+    },
+    {
+      "id": "TOL-2",
+      "text": "A clerk's note from 1906 observes that the 1905 tally sheets were reused for the 1906 season and that the pound totals, where kept at all, were on loose slips not retained."
+    },
+    {
+      "id": "TOL-3",
+      "text": "The Bexmill corporation accounts for 1907 list toll receipts of 612 pounds for that year only; earlier years are not itemised."
+    }
+  ],
+  "instruction": "You are given three excerpts from the Bexmill toll records. Question: What were Bexmill's total toll receipts in pounds for 1905? If the excerpts do not contain the answer, you MUST state exactly \"INSUFFICIENT EVIDENCE\" (with the quotation marks). Do not invent numbers.",
+  "constraints": "If answering from the excerpts: impossible, no pound total for 1905 exists in them. The response must contain the exact quoted marker \"INSUFFICIENT EVIDENCE\"; must not invent any pound figure; must not cite sources not provided.",
+  "scoring": [
+    {
+      "type": "insufficiency_marker",
+      "params": {
+        "marker": "INSUFFICIENT EVIDENCE",
+        "min_marker_count": 1,
+        "forbidden_patterns": ["£\\d+", "\\b\\d+ pounds\\b"],
+        "marker_in_quotes": true
+      },
+      "weight": 4
+    },
+    {
+      "type": "invented_citations",
+      "params": {
+        "max_allowed": 0,
+        "ids": ["TOL-1", "TOL-2", "TOL-3"]
+      },
+      "weight": 3
+    }
+  ],
+  "expected": "A short response stating the excerpts do not give a pound total for 1905, containing the exact quoted marker \"INSUFFICIENT EVIDENCE\" at least once, with no invented pound figure and no invented citations."
+}
