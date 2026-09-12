@@ -14,7 +14,10 @@ Shapes are pinned by contract amendments v0.1.1-v0.1.9:
   results, even error cases, so compare denominators stay stable.
 - RunRecord carries no singular suite; suites live in the config snapshot
   and on each CaseResult. summary always contains the six mandatory keys
-  total_cases, passed, failed, needs_human, errors, duration_ms.
+  total_cases, passed, failed, needs_human, errors, duration_ms
+  (v0.1.3 A3) — construction and from_dict REJECT records missing any of
+  them (loud boundary, no silent default rendering), extras like
+  weighted_pass_rate are allowed.
 
 Serialization round-trips through result.json exactly:
 from_dict(to_dict(obj)) == obj for every model here.
@@ -39,6 +42,15 @@ __all__ = [
 ]
 
 CASE_STATUSES = ("passed", "failed", "needs_human", "error")
+
+MANDATORY_SUMMARY_KEYS = (
+    "total_cases",
+    "passed",
+    "failed",
+    "needs_human",
+    "errors",
+    "duration_ms",
+)
 
 
 def _require(condition: bool, message: str) -> None:
@@ -284,6 +296,14 @@ class RunRecord:
     summary: dict
     duration_ms: float
 
+    def __post_init__(self) -> None:
+        missing = [key for key in MANDATORY_SUMMARY_KEYS if key not in self.summary]
+        if missing:
+            raise ValueError(
+                f"summary missing mandatory key(s) {missing} "
+                f"(v0.1.3 A3: required keys are {list(MANDATORY_SUMMARY_KEYS)})"
+            )
+
     def to_dict(self) -> dict:
         return {
             "run_id": self.run_id,
@@ -314,6 +334,12 @@ class RunRecord:
             _require(key in data, f"run record missing required key {key!r}")
         _require(isinstance(data["config"], dict), "run 'config' must be an object")
         _require(isinstance(data["summary"], dict), "run 'summary' must be an object")
+        missing_summary = [key for key in MANDATORY_SUMMARY_KEYS if key not in data["summary"]]
+        if missing_summary:
+            raise ValueError(
+                f"summary missing mandatory key(s) {missing_summary} "
+                f"(v0.1.3 A3: required keys are {list(MANDATORY_SUMMARY_KEYS)})"
+            )
         results_raw = data["results"]
         _require(isinstance(results_raw, list), "run 'results' must be a list")
         results = [CaseResult.from_dict(entry) for entry in results_raw]
