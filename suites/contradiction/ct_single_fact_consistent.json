@@ -1,0 +1,45 @@
+{
+  "schema_version": "1",
+  "case_id": "ct_single_fact_consistent",
+  "suite": "contradiction",
+  "title": "Repeat a decisive detail without blending the planted misstatement",
+  "purpose": "Tests assertion consistency: the prompt plants a near-miss distractor ('eleven thousand looms', flagged in-text as a misstatement) beside the correct detail ('eleven thousand spindles'); the compliant response repeats the correct variant once and does not blend both. This case measures ASSERTION CONSISTENCY, not detection of contradictions inside the evidence — a model could pass while the underlying material remains contradictory; what is checked is that the response does not assert both sides. Scoring is rule-based lexical matching, never semantic understanding (docs/scoring.md).",
+  "evidence": [
+    {
+      "id": "MIL-1",
+      "text": "The Wrayton mill inventory of 1911 records eleven thousand spindles in the north room. A common misstatement, repeated in some later pamphlets, is eleven thousand looms — a confusion with the room's loom count, which was one thousand one hundred."
+    },
+    {
+      "id": "MIL-2",
+      "text": "The 1912 supplement notes the mill's water wheel was replaced that year, with no change to the spindle count."
+    }
+  ],
+  "instruction": "You are given two excerpts about the Wrayton mill. State the mill's 1911 spindle count as given in the inventory. Do not repeat the misreported figure, and do not mix it with the correct one. Cite the excerpt you use with a bracketed token like [MIL-1].",
+  "constraints": "Response must state eleven thousand spindles; must not contain the phrase 'eleven thousand looms'; must cite MIL-1 in token form.",
+  "scoring": [
+    {
+      "type": "lexical_contradiction",
+      "params": {
+        "pairs": [["eleven thousand spindles", "eleven thousand looms"]]
+      },
+      "weight": 4
+    },
+    {
+      "type": "required_source_ids",
+      "params": {
+        "ids": ["MIL-1"],
+        "allow_extras": true
+      },
+      "weight": 3
+    },
+    {
+      "type": "invented_citations",
+      "params": {
+        "max_allowed": 0,
+        "ids": ["MIL-1", "MIL-2"]
+      },
+      "weight": 3
+    }
+  ],
+  "expected": "A single sentence stating the mill had eleven thousand spindles in 1911 (citing [MIL-1]), with no mention of 'eleven thousand looms' and no invented citations."
+}

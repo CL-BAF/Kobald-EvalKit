@@ -1,0 +1,60 @@
+{
+  "schema_version": "1",
+  "case_id": "ct_variant_blend",
+  "suite": "contradiction",
+  "title": "Keep two attributions distinct across near-identical subjects",
+  "purpose": "Tests assertion consistency across two parallel subjects: the excerpts assign water power to the Wrayton mill and steam power to the Denshaw mill; a blending response swaps or hedges the attribution. ASSERTION CONSISTENCY, not evidence-contradiction detection — the sources do not contradict each other; the case checks the response does not assert both members of either attribution pair. Rule-based lexical pairs only (docs/scoring.md); paraphrases without the pinned phrases are invisible by design and covered by the needs_human philosophy elsewhere.",
+  "evidence": [
+    {
+      "id": "PWR-1",
+      "text": "The Wrayton mill was water-powered from its opening, drawing from the Wray Beck; its wheelhouse survives."
+    },
+    {
+      "id": "PWR-2",
+      "text": "The Denshaw mill was steam-powered from its first expansion in 1863; its boiler seat is visible in the yard."
+    }
+  ],
+  "instruction": "You are given two excerpts about two mills. In one or two sentences, state which mill was water-powered and which was steam-powered, exactly as the excerpts say. Do not speculate about conversions or any history not in the excerpts. Cite the excerpts you use with bracketed tokens like [PWR-1].",
+  "constraints": "Response must attribute water power to Wrayton and steam power to Denshaw; must not assert the swapped attribution; must not invent conversion events; must cite PWR-1 and PWR-2 in token form.",
+  "scoring": [
+    {
+      "type": "lexical_contradiction",
+      "params": {
+        "pairs": [
+          ["wrayton mill was water-powered", "wrayton mill was steam-powered"],
+          ["denshaw mill was steam-powered", "denshaw mill was water-powered"],
+          ["wrayton was water-powered", "wrayton was steam-powered"],
+          ["denshaw was steam-powered", "denshaw was water-powered"],
+          ["water-powered from its opening", "steam-powered from its first expansion"],
+          ["drawing from the wray beck", "boiler seat is visible"]
+        ]
+      },
+      "weight": 4
+    },
+    {
+      "type": "unsupported_claims",
+      "params": {
+        "max_allowed": 0,
+        "markers": ["was converted", "was later converted", "switched to"]
+      },
+      "weight": 2
+    },
+    {
+      "type": "required_source_ids",
+      "params": {
+        "ids": ["PWR-1", "PWR-2"],
+        "allow_extras": false
+      },
+      "weight": 3
+    },
+    {
+      "type": "invented_citations",
+      "params": {
+        "max_allowed": 0,
+        "ids": ["PWR-1", "PWR-2"]
+      },
+      "weight": 3
+    }
+  ],
+  "expected": "One or two sentences attributing water power to Wrayton [PWR-1] and steam power to Denshaw [PWR-2], with no swapped attribution, no conversion story, and no invented citations."
+}
