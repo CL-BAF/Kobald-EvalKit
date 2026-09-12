@@ -48,18 +48,18 @@ violated pair).
 - String-keyed, not NLI: paraphrases WITHOUT the pinned phrases are
   invisible. This is the conservative design; semantic judgement stays
   needs_human elsewhere.
-- PAIR-FORMATION RULE (D4-1, Lead ruling): each pair's members must be
-  MUTUALLY EXCLUSIVE claims about the SAME fact — a faithful response
-  citing both sources must trip ZERO pairs; a blended response must trip
-  ≥ 1. Evidence-detail phrases from DIFFERENT subjects must never be paired
-  (that made the original pairs 3-6 inverted: a faithful both-sources
-  citation contained both members). The landed pair list is
-  same-mill attribution contrasts, plus one swap-catcher pair whose two
-  members are BOTH evidence-contradicting claims ('Wrayton mill was
-  steam-powered' / 'Denshaw mill was water-powered'): a compliant response
-  contains neither, a single-side swap contains both, so the swap trips
-  without re-introducing value-correctness scoring (the pair checks
-  co-presence of two wrong claims, not truth).
+- PAIR-FORMATION RULE (D4-1, Lead ruling + v0.1.13 addendum): same-fact
+  pairs' members must be MUTUALLY EXCLUSIVE claims — a faithful response
+  citing both sources must trip ZERO pairs. Cross-mill combination pairs
+  ARE PERMITTED where a faithful response can never contain both members:
+  rule 2's single pair ('Wrayton mill was steam-powered' / 'Denshaw mill
+  was water-powered') co-occurs ONLY in a swapped world — a compliant
+  response contains neither member, a full swap contains both. The MIRROR
+  cross-mill pair ('Wrayton water' / 'Denshaw steam') was REJECTED by
+  scorer-run verification: a faithful-cites-both response contains exactly
+  both of those members, which would false-positive (the original pairs
+  3-6 defect class). Landed: rule 1 = same-mill blends (w4), rule 2 =
+  single swap-catch pair (w3).
 - SWAP-DETECTION SCOPE: the swap-catcher pair fires when the response
   asserts BOTH wrong attributions in the pinned phrasings; a swap phrased
   entirely outside the pinned phrases remains invisible (string-keyed

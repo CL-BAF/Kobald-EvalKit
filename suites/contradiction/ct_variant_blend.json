@@ -15,18 +15,26 @@
     }
   ],
   "instruction": "You are given two excerpts about two mills. In one or two sentences, state which mill was water-powered and which was steam-powered, exactly as the excerpts say. Do not speculate about conversions or any history not in the excerpts. Cite the excerpts you use with bracketed tokens like [PWR-1].",
-  "constraints": "Response must attribute water power to Wrayton and steam power to Denshaw; must not assert the swapped attribution for either mill; must not invent conversion events; must cite PWR-1 and PWR-2 in token form. Honesty note: the lexical pairs catch BLENDING (both attributions asserted for the same mill) only when the pinned phrases appear; a fully-paraphrased single-side swap without the pinned phrases may be invisible to the scorer (stated limitation, docs/suites/contradiction.md).",
+  "constraints": "Response must attribute water power to Wrayton and steam power to Denshaw; must not assert the swapped attribution for either mill; must not invent conversion events; must cite PWR-1 and PWR-2 in token form. Honesty note: rule 1 catches BLENDING (both attributions for the same mill); rule 2 catches the full SWAP (both evidence-contradicting attributions co-present — impossible in a faithful response). Paraphrase-only assertions outside the pinned phrases remain invisible (stated limitation, docs/suites/contradiction.md).",
   "scoring": [
     {
       "type": "lexical_contradiction",
       "params": {
         "pairs": [
           ["wrayton mill was water-powered", "wrayton mill was steam-powered"],
-          ["denshaw mill was steam-powered", "denshaw mill was water-powered"],
-          ["wrayton mill was steam-powered", "denshaw mill was water-powered"]
+          ["denshaw mill was steam-powered", "denshaw mill was water-powered"]
         ]
       },
       "weight": 4
+    },
+    {
+      "type": "lexical_contradiction",
+      "params": {
+        "pairs": [
+          ["wrayton mill was steam-powered", "denshaw mill was water-powered"]
+        ]
+      },
+      "weight": 3
     },
     {
       "type": "unsupported_claims",
