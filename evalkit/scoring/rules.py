@@ -18,6 +18,7 @@ from . import register_scorer
 __all__ = []
 
 _JSON_TYPE_NAMES = ("string", "number", "boolean", "array", "object")
+_MAX_NAMED = 5
 
 
 def _extract_first_json(response: str) -> tuple[Any, str] | tuple[None, str]:
@@ -280,6 +281,101 @@ def _conflict_assessment(case: EvalCase, response: str, params: dict) -> list[Ch
     ]
 
 
+def _insufficiency_marker(case: EvalCase, response: str, params: dict) -> list[Check]:
+    """Insufficiency-marker scoring (Amendment v0.1.11): verifies the model
+    flags missing figures with an exact marker phrase.
+
+    params: {"marker": str (required), "min_marker_count": int (default 1),
+    "max_marker_count": int | None (default None = unbounded),
+    "forbidden_patterns": [regex strings], "marker_in_quotes": bool
+    (default true — marker matched as a quoted literal substring)}.
+
+    Passes iff: marker count (case-insensitive substring search) is within
+    [min_marker_count, max_marker_count] (None = unbounded), no
+    forbidden_pattern matches, and no citation-like token outside the
+    case's evidence ID set appears. needs_human: no. The max bound enables
+    discrimination pairs (marker required when the evidence lacks a
+    figure, forbidden when it has one). Honesty limit: marker compliance
+    is not calibrated confidence — that judgement stays human.
+    """
+    marker = params.get("marker")
+    if not isinstance(marker, str) or not marker:
+        raise ValueError("insufficiency_marker: 'marker' must be a non-empty string")
+    min_count = params.get("min_marker_count", 1)
+    if isinstance(min_count, bool) or not isinstance(min_count, int) or min_count < 0:
+        raise ValueError("insufficiency_marker: 'min_marker_count' must be a non-negative integer")
+    max_count = params.get("max_marker_count")
+    if max_count is not None and (
+        isinstance(max_count, bool) or not isinstance(max_count, int) or max_count < 0
+    ):
+        raise ValueError("insufficiency_marker: 'max_marker_count' must be a non-negative integer or null")
+    if max_count is not None and min_count > max_count:
+        raise ValueError(
+            f"insufficiency_marker: min_marker_count {min_count} > max_marker_count {max_count}"
+        )
+    forbidden = params.get("forbidden_patterns", [])
+    if not isinstance(forbidden, list) or not all(isinstance(p, str) for p in forbidden):
+        raise ValueError("insufficiency_marker: 'forbidden_patterns' must be a list of regex strings")
+    in_quotes = params.get("marker_in_quotes", True)
+    if not isinstance(in_quotes, bool):
+        raise ValueError("insufficiency_marker: 'marker_in_quotes' must be a bool")
+
+    needle = f'"{marker}"' if in_quotes else marker
+    low = response.lower()
+    count = 0
+    start = 0
+    while True:
+        index = low.find(needle.lower(), start)
+        if index == -1:
+            break
+        count += 1
+        start = index + len(needle)
+
+    forbidden_hits: list[str] = []
+    for pattern in forbidden:
+        try:
+            compiled = re.compile(pattern)
+        except re.error as exc:
+            raise ValueError(f"insufficiency_marker: bad pattern {pattern!r}: {exc}") from exc
+        forbidden_hits.extend(m.group(0) for m in compiled.finditer(response))
+
+    from . import CITATION_TOKEN_RE
+
+    evidence_ids = set(case.evidence_ids)
+    invented = [
+        t[1:-1] for t in CITATION_TOKEN_RE.findall(response) if t[1:-1] not in evidence_ids
+    ]
+
+    problems: list[str] = []
+    if count < min_count:
+        problems.append(f"marker {needle} found {count} time(s), requires >= {min_count}")
+    if max_count is not None and count > max_count:
+        problems.append(f"marker {needle} found {count} time(s), allows <= {max_count}")
+    if forbidden_hits:
+        shown = ", ".join(sorted(set(forbidden_hits))[:_MAX_NAMED])
+        problems.append(f"forbidden pattern(s) present: {shown}")
+    if invented:
+        shown = ", ".join(f"'[{i}]'" for i in sorted(set(invented))[:_MAX_NAMED])
+        problems.append(f"citation-like token(s) not in evidence: {shown}")
+
+    passed = not problems
+    detail = (
+        "; ".join(problems)
+        if problems
+        else f"marker {needle} present {count} time(s) (allowed {min_count}-"
+        + (str(max_count) if max_count is not None else "unbounded")
+        + "), no forbidden patterns, no invented citations"
+    )
+    return [
+        Check(
+            name="insufficiency_marker",
+            passed=passed,
+            detail=detail,
+            count=count,
+        )
+    ]
+
+
 register_scorer("valid_json", _valid_json)
 register_scorer("required_fields", _required_fields)
 register_scorer("field_type", _field_type)
@@ -289,3 +385,4 @@ register_scorer("all_sources_present", _all_sources_present)
 register_scorer("unresolved_marker", _unresolved_marker)
 register_scorer("no_absolute_claims", _no_absolute_claims)
 register_scorer("conflict_assessment", _conflict_assessment)
+register_scorer("insufficiency_marker", _insufficiency_marker)
