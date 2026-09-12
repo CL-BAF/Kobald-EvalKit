@@ -16,6 +16,11 @@ from . import CITATION_TOKEN_RE, register_scorer
 __all__ = []
 
 _DEFAULT_MIN_LENGTH = 200
+_MAX_NAMED_MARKERS = 5
+_MARKERS_NOTE = (
+    "marker occurrences are counted case-insensitively; overlapping matches "
+    "and multiple occurrences in one sentence each count"
+)
 
 
 def _tokens(text: str) -> list[str]:
@@ -77,21 +82,31 @@ def _invented_citations(case: EvalCase, response: str, params: dict) -> list[Che
             raise ValueError(f"invented_citations: bad pattern {pattern!r}: {exc}") from exc
         invented.extend(match.group(0) for match in compiled.finditer(response))
     count = len(invented)
+    named = ", ".join(f"'{token}'" for token in sorted(set(invented))[:_MAX_NAMED_MARKERS])
+    if len(set(invented)) > _MAX_NAMED_MARKERS:
+        named += f" and {len(set(invented)) - _MAX_NAMED_MARKERS} more"
+    detail = (
+        f"{count} invented citation(s) found: {named} (max allowed {max_allowed})"
+        if count
+        else "no invented citations"
+    )
     return [
         Check(
             name="invented_citations",
             passed=count <= max_allowed,
-            detail=(
-                f"{count} invented citation(s) found (max allowed {max_allowed})"
-                if count
-                else "no invented citations"
-            ),
+            detail=detail,
             count=count,
         )
     ]
 
 
 def _unsupported_claims(case: EvalCase, response: str, params: dict) -> list[Check]:
+    """Marker-count algorithm per v0.1.10 ruling: counts occurrences of the
+    case's declared failure markers (case-insensitive substring search;
+    overlapping occurrences of the same marker each count; occurrences
+    within one sentence still count). passed iff count <= max_allowed.
+    The needs_human escape hatch is unchanged: zero citation tokens in a
+    response >= min_length chars -> needs_human. Note: {_MARKERS_NOTE}"""
     max_allowed = params.get("max_allowed")
     if isinstance(max_allowed, bool) or not isinstance(max_allowed, int):
         raise ValueError("unsupported_claims: 'max_allowed' must be an integer")
@@ -103,45 +118,52 @@ def _unsupported_claims(case: EvalCase, response: str, params: dict) -> list[Che
         raise ValueError("unsupported_claims: 'markers' must be a list of strings")
 
     needs_human = False
-    detail_parts: list[str] = []
     token_count = len(_tokens(response))
     if token_count == 0 and len(response) >= min_length:
         needs_human = True
-        detail_parts.append(
-            f"zero citation tokens in a {len(response)}-char response; "
-            "automation cannot verify grounding - human review required"
-        )
 
-    claims = 0
+    counts: dict[str, int] = {}
     low = response.lower()
     for marker in markers:
+        needle = marker.lower()
+        hits = 0
         start = 0
         while True:
-            index = low.find(marker.lower(), start)
+            index = low.find(needle, start)
             if index == -1:
                 break
-            claims += 1
-            start = index + len(marker)
-    over = max(0, claims - max_allowed)
+            hits += 1
+            start = index + len(needle)
+        if hits:
+            counts[marker] = hits
+    claims = sum(counts.values())
+
     if needs_human:
-        passed = False
         detail = (
-            f"needs human review: {detail_parts[0]}; "
+            "needs human review: zero citation tokens in a "
+            f"{len(response)}-char response; automation cannot verify grounding; "
             f"claim-marker count {claims} (max allowed {max_allowed})"
         )
     else:
-        passed = over == 0
-        detail = (
-            f"{claims} uncited claim marker(s) (max allowed {max_allowed})"
-            if claims
-            else "no uncited claim markers"
-        )
+        passed = claims <= max_allowed
+        if claims:
+            named = list(counts.items())
+            shown = named[:_MAX_NAMED_MARKERS]
+            label = ", ".join(f"'{marker}' x{hits}" for marker, hits in shown)
+            if len(named) > _MAX_NAMED_MARKERS:
+                label += f" and {len(named) - _MAX_NAMED_MARKERS} more marker type(s)"
+            detail = (
+                f"{claims} uncited claim marker(s): {label} "
+                f"(max allowed {max_allowed})"
+            )
+        else:
+            detail = "no uncited claim markers"
     return [
         Check(
             name="unsupported_claims",
-            passed=passed,
+            passed=False if needs_human else claims <= max_allowed,
             detail=detail,
-            count=claims if not needs_human else None,
+            count=None if needs_human else claims,
             needs_human=needs_human,
         )
     ]

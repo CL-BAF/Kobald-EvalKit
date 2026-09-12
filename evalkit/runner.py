@@ -65,7 +65,6 @@ def run_suite(
 
     duration_ms = (perf_counter() - clock_start) * 1000.0
     summary = run_summary(statuses, weights, duration_ms)
-    summary["weighted_pass_rate"] = summary.get("weighted_pass_rate")
 
     return RunRecord(
         run_id="",  # assigned by the store on save
