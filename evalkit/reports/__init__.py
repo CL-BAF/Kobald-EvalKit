@@ -12,8 +12,6 @@ from ..scoring import AGGREGATE_FORMULA, AGGREGATE_LIMITATIONS
 
 __all__ = ["terminal_summary", "markdown_report", "suite_breakdown"]
 
-_STATUS_ORDER = ("passed", "failed", "needs_human", "error")
-
 
 def _fmt_rate(rate: float | None) -> str:
     if rate is None:
@@ -21,14 +19,12 @@ def _fmt_rate(rate: float | None) -> str:
     return f"{rate * 100:.1f}%"
 
 
-def _status_line(status: str, count: int) -> str:
-    labels = {
-        "passed": "PASS",
-        "failed": "FAIL",
-        "needs_human": "NEEDS HUMAN",
-        "error": "ERROR",
-    }
-    return f"{labels[status]}: {count}"
+_SUMMARY_STATUS_KEYS = (
+    ("passed", "PASS"),
+    ("failed", "FAIL"),
+    ("needs_human", "NEEDS HUMAN"),
+    ("errors", "ERROR"),
+)
 
 
 def terminal_summary(record: RunRecord) -> str:
@@ -40,7 +36,8 @@ def terminal_summary(record: RunRecord) -> str:
         (
             f"cases: {summary['total_cases']}  "
             + "  ".join(
-                _status_line(status, summary.get(status, 0)) for status in _STATUS_ORDER
+                f"{label}: {summary.get(key, 0)}"
+                for key, label in _SUMMARY_STATUS_KEYS
             )
         ),
         f"weighted pass rate: {_fmt_rate(summary.get('weighted_pass_rate'))}",

@@ -1,9 +1,8 @@
-"""Markdown rendering for compare output (M2-facing; kept compare-friendly)."""
+"""Markdown + terminal rendering for compare output."""
 
 from __future__ import annotations
 
 from ..compare import Comparison
-from ..errors import CompareError
 
 __all__ = ["compare_markdown", "compare_terminal"]
 
@@ -59,9 +58,3 @@ def compare_markdown(comparison: Comparison) -> str:
                 out.append(f"- {key}: {delta['a']} -> {delta['b']}")
         out.append("")
     return "\n".join(out) + "\n"
-
-
-def render_or_raise(comparison: Comparison) -> str:
-    if not comparison.comparable:
-        raise CompareError("runs are not comparable")
-    return compare_markdown(comparison)
