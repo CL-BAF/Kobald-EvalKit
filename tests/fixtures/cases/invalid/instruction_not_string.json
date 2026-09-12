@@ -1,0 +1,11 @@
+{
+  "case_id": "invalid__instruction_not_string",
+  "suite": "evidence_grounding",
+  "title": "Instruction is not a string",
+  "purpose": "Fixture: instruction is a number; loader must reject naming this file.",
+  "evidence": ["The capital of France is Paris."],
+  "instruction": 42,
+  "constraints": ["Do not add commentary."],
+  "scoring": [{"type": "exact_match", "params": {"expected": "Paris"}, "weight": 1.0}],
+  "expected": "Paris"
+}

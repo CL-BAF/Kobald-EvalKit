@@ -1,0 +1,11 @@
+{
+  "case_id": "../invalid__path_traversal",
+  "suite": "evidence_grounding",
+  "title": "Unsafe case_id (path traversal)",
+  "purpose": "Fixture: case_id contains ../; loader must reject as unsafe, never use it as a filename.",
+  "evidence": ["The capital of France is Paris."],
+  "instruction": "Answer with the capital city only.",
+  "constraints": ["Do not add commentary."],
+  "scoring": [{"type": "exact_match", "params": {"expected": "Paris"}, "weight": 1.0}],
+  "expected": "Paris"
+}

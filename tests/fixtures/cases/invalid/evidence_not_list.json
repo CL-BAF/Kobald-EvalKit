@@ -1,0 +1,11 @@
+{
+  "case_id": "invalid__evidence_not_list",
+  "suite": "evidence_grounding",
+  "title": "Evidence is not a list",
+  "purpose": "Fixture: evidence is a string; loader must reject naming this file.",
+  "evidence": "The capital of France is Paris.",
+  "instruction": "Answer with the capital city only.",
+  "constraints": ["Do not add commentary."],
+  "scoring": [{"type": "exact_match", "params": {"expected": "Paris"}, "weight": 1.0}],
+  "expected": "Paris"
+}

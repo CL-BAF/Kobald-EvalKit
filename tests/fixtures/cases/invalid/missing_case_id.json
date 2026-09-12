@@ -1,0 +1,10 @@
+{
+  "suite": "evidence_grounding",
+  "title": "Missing case_id",
+  "purpose": "Fixture: case_id key absent; loader must reject naming this file.",
+  "evidence": ["The capital of France is Paris."],
+  "instruction": "Answer with the capital city only.",
+  "constraints": ["Do not add commentary."],
+  "scoring": [{"type": "exact_match", "params": {"expected": "Paris"}, "weight": 1.0}],
+  "expected": "Paris"
+}

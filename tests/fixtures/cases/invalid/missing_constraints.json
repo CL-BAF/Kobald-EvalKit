@@ -1,0 +1,10 @@
+{
+  "case_id": "invalid__missing_constraints",
+  "suite": "evidence_grounding",
+  "title": "Missing constraints field",
+  "purpose": "Fixture: constraints key absent; loader must reject naming this file.",
+  "evidence": ["The capital of France is Paris."],
+  "instruction": "Answer with the capital city only.",
+  "scoring": [{"type": "exact_match", "params": {"expected": "Paris"}, "weight": 1.0}],
+  "expected": "Paris"
+}

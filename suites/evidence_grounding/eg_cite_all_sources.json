@@ -1,0 +1,42 @@
+{
+  "schema_version": "1",
+  "case_id": "eg_cite_all_sources",
+  "suite": "evidence_grounding",
+  "title": "Cite all provided sources when synthesizing",
+  "purpose": "Tests whether the model cites every source it was given when asked to synthesize across them. Local models frequently answer from parametric memory and drop citations entirely; a response that ignores provided evidence IDs signals the model will not ground RAG-style answers. This case makes that drift visible and countable.",
+  "evidence": [
+    {
+      "id": "SRC-1",
+      "text": "The Merrow Wetlands Survey (June 1987) recorded 141 breeding pairs of the banded reedwarbler along the Cobble River floodplain, a 12 percent decline from the 1981 count. The survey attributed the decline to late spring flooding of nesting banks."
+    },
+    {
+      "id": "SRC-2",
+      "text": "A 1990 note from the Fenwick Ornithological Society reports that banded reedwarblers raised on the floodplain will abandon a nest site if reed height falls below 40 centimeters, which typically follows a single flood season."
+    },
+    {
+      "id": "SRC-3",
+      "text": "The Harlow County bird census of 1994 found the reedwarbler population had stabilized at approximately 130 pairs, with no new decline, after the county installed two flood spillways upstream of the wetlands in 1992."
+    }
+  ],
+  "instruction": "You are given three numbered sources about the banded reedwarbler population in Harlow County. Using ONLY these sources, write a short summary (3-5 sentences) of how the population changed between 1981 and 1994 and why. Cite each source at least once using bracketed tokens like [SRC-1]. Do not include facts that are not in the sources.",
+  "constraints": "Response must cite SRC-1, SRC-2 and SRC-3 at least once each, in [ID] token format; no citations to sources that were not provided; every factual statement must be attributable to a cited source.",
+  "scoring": [
+    {
+      "type": "required_source_ids",
+      "params": {
+        "ids": ["SRC-1", "SRC-2", "SRC-3"],
+        "allow_extras": false
+      },
+      "weight": 3
+    },
+    {
+      "type": "invented_citations",
+      "params": {
+        "max_allowed": 0,
+        "ids": ["SRC-1", "SRC-2", "SRC-3"]
+      },
+      "weight": 4
+    }
+  ],
+  "expected": "A 3-5 sentence summary of the population trajectory (decline, mechanism, stabilization) with each sentence attributable to a cited source, and citations [SRC-1], [SRC-2], [SRC-3] all present exactly in token format."
+}

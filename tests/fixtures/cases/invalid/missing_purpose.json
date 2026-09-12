@@ -1,0 +1,11 @@
+{
+  "case_id": "invalid__missing_purpose",
+  "suite": "evidence_grounding",
+  "title": "Missing purpose field",
+  "purpose": null,
+  "evidence": ["The capital of France is Paris."],
+  "instruction": "Answer with the capital city only.",
+  "constraints": ["Do not add commentary."],
+  "scoring": [{"type": "exact_match", "params": {"expected": "Paris"}, "weight": 1.0}],
+  "expected": "Paris"
+}

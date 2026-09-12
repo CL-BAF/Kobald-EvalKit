@@ -1,0 +1,11 @@
+{
+  "case_id": "invalid__empty_evidence",
+  "suite": "evidence_grounding",
+  "title": "Empty evidence list",
+  "purpose": "Fixture: evidence is an empty list; an evidence-grounding case without evidence must be rejected.",
+  "evidence": [],
+  "instruction": "Answer with the capital city only.",
+  "constraints": ["Do not add commentary."],
+  "scoring": [{"type": "exact_match", "params": {"expected": "Paris"}, "weight": 1.0}],
+  "expected": "Paris"
+}

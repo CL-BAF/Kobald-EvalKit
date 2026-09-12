@@ -1,0 +1,11 @@
+{
+  "case_id": "invalid__scoring_empty_list",
+  "suite": "evidence_grounding",
+  "title": "Empty scoring list",
+  "purpose": "Fixture: scoring is an empty list; a case with no checks cannot be scored and must be rejected.",
+  "evidence": ["The capital of France is Paris."],
+  "instruction": "Answer with the capital city only.",
+  "constraints": ["Do not add commentary."],
+  "scoring": [],
+  "expected": "Paris"
+}

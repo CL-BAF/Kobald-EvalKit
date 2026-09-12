@@ -1,0 +1,42 @@
+{
+  "schema_version": "1",
+  "case_id": "eg_no_extra_sources",
+  "suite": "evidence_grounding",
+  "title": "Cite only the relevant source among distractors",
+  "purpose": "Tests source discrimination: the model receives one relevant source and two plausible distractors about a different subject, and must cite exactly the relevant one. Citing distractors shows the model matches citation tokens superficially rather than selecting evidence by content, which is a critical failure for retrieval-augmented use where distractors are common.",
+  "evidence": [
+    {
+      "id": "DOC-7",
+      "text": "The Kettlebridge municipal archive records that the town's first public library opened in 1911 in a converted grain exchange on Alder Street, funded largely by a bequest from local mill owner Harriet Voss."
+    },
+    {
+      "id": "DOC-8",
+      "text": "The Kettlebridge tramway ceased passenger service in 1937, after a collision near Foundry Bridge injured eleven passengers. Freight service continued until 1955."
+    },
+    {
+      "id": "DOC-9",
+      "text": "A 1928 planning note describes Alder Street as the town's main commercial thoroughfare, with cobbled surfacing replaced by asphalt in 1934."
+    }
+  ],
+  "instruction": "You are given three document excerpts about the town of Kettlebridge. Answer the following question using ONLY the excerpts: In what year did Kettlebridge's first public library open, and how was it funded? Cite the source you used with a bracketed token like [DOC-7]. Cite only the source that actually supports your answer, no others. Do not include facts that are not in the excerpts.",
+  "constraints": "Response must cite DOC-7 only (the supporting source); citing DOC-8 or DOC-9 fails; answer must match the excerpt content (1911, bequest from Harriet Voss).",
+  "scoring": [
+    {
+      "type": "required_source_ids",
+      "params": {
+        "ids": ["DOC-7"],
+        "allow_extras": false
+      },
+      "weight": 3
+    },
+    {
+      "type": "invented_citations",
+      "params": {
+        "max_allowed": 0,
+        "ids": ["DOC-7"]
+      },
+      "weight": 4
+    }
+  ],
+  "expected": "A one or two sentence answer stating the library opened in 1911, funded largely by a bequest from mill owner Harriet Voss, citing [DOC-7] and nothing else."
+}
