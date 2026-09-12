@@ -136,7 +136,7 @@ faithfulness, subtle (non-lexical) contradictions, anything about model
 | `structured_output` | 2 | valid JSON, required fields, field types |
 | `uncertainty` | 2 | marker discrimination: flag insufficiency when evidence lacks the figure, restrain when it has it |
 | `contradiction` | 2 | rule-based assertion consistency (no blending of planted misstatements) |
-| `mixed_evidence` | — | planned: weigh conflicting evidence (needs_human by design) |
+| `mixed_evidence` | 2 | weighing conflicting evidence; needs_human by design (semantic judgement) |
 
 All suite content is invented (fictional towns, studies, records) and
 redistributable. [`docs/suites/`](docs/suites/) holds the user-facing
@@ -151,7 +151,7 @@ evalkit doctor    [--provider mock|ollama] [--model TAG] [--base-url URL]
                   [--timeout SEC] [--allow-non-loopback] [--config FILE]
 evalkit models    [same options]         # JSON, data-first, ':cloud' flags attached
 evalkit list      [--suite NAME]         # registry suites with case files
-evalkit run       SUITE|--all-implicit   # see: evalkit run --help
+evalkit run       SUITE   # or: evalkit run all  (every suite with case files)
 evalkit report    RUN_ID
 evalkit compare   RUN_A RUN_B
 ```
